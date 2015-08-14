@@ -103,24 +103,13 @@ class ItemController extends \BaseController {
                         Total Weight
                         </td>
                         <td>
-                        Total Pallets(E)
+                        Total Pallets
                         </td>
                     <td>
-                    Total Spaces(E)
-                    </td>
-                         <td>
-                        Total Pallets(35 cpp)
-                        </td>
-                    <td>
-                    Total Spaces(35 cpp)
-                    </td>
-                       <td>
-                    Total Pallets(Avg)
+                    Total Spaces
                     </td>
 
-                    <td>
-                    Total Spaces(Avg)
-                    </td>
+
 
                     </tr>';
 
@@ -163,18 +152,13 @@ class ItemController extends \BaseController {
                         </td>
                         <td>Cartons per Pallet</td>
                         <td>
-                    Total Pallets(E)
+                    Total Pallets
                     </td>
 
                     <td>
-                    Total Spaces(E)
+                    Total Spaces
                     </td>
-                    <td>
-                    Total Pallets(35 cpp)
-                    </td>
-                       <td>
-                    Total Spaces(35 cpp)
-                    </td>
+
 
 
                     </tr>';
@@ -213,12 +197,7 @@ class ItemController extends \BaseController {
                     <td>
                     NA
                     </td>
-                     <td>
-                    NA
-                    </td>
-                    <td>
-                    NA
-                    </td>
+
 
                     </tr>';
 
@@ -236,8 +215,10 @@ class ItemController extends \BaseController {
                 $totalWeight += $item->getWeight($linequantity);
                 $totalPallets += $item->getPalletCount($linequantity);
                 $totalSpaces += $item->getSpaceCount($linequantity);
-                $totalRoundedPallets+=ceil($item->getPalletCount($linequantity));
-                $totalRoundedSpaces+=$item->getSpaceCountPerBased($linequantity);
+
+                //remove due to not needing estimated
+//                $totalRoundedPallets+=ceil($item->getPalletCount($linequantity));
+//                $totalRoundedSpaces+=$item->getSpaceCountPerBased($linequantity);
 
                 //end of info to totals variables
 
@@ -269,11 +250,7 @@ class ItemController extends \BaseController {
                       <td>
                   ' . number_format($item->getSpaceCount($linequantity),2,'.','') . '
                     </td>
-                    <td>
-                    ' . number_format($item->getPalletCountPerBased($linequantity),2,'.','') . '
-                    </td> <td>
-                  ' . number_format($item->getSpaceCountPerBased($linequantity),2,'.',''). '
-                    </td>
+
 
                     </tr>';
 
@@ -300,18 +277,8 @@ class ItemController extends \BaseController {
 <td>
 ' . number_format($totalSpaces,2,'.','') . '
 </td>
-<td>
-' . number_format($totalCartons/35,2,'.','') . '
-</td>
-<td>
-' . number_format($totalRoundedSpaces,2,'.','') . '
-</td>
-<td>
-' . number_format(($totalPallets+($totalCartons/35))/2,2,'.','') . '
-</td>
-<td>
-' . number_format(($totalSpaces+$totalRoundedSpaces)/2,2,'.','') . '
-</td>
+
+
 </tr></table>
             </div>
             ';
