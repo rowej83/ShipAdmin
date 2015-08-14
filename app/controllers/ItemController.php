@@ -1,24 +1,26 @@
 <?php
 
-class ItemController extends \BaseController {
+class ItemController extends \BaseController
+{
 
-	/**
-	 * Display a listing of the resource.
-	 *
-	 * @return Response
-	 */
-	public function index()
-	{
-		//
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        //
         return View::make('input');
-	}
+    }
 
 
     /**
      * load Grabs the excel file items.xlsx and adds/update the cmmfs in the DB
      */
-    public function load(){
-        //    storage_path('exports') . '/file.csv';
+    public function load()
+    {
+
 
         Excel::load(storage_path() . '\items.xlsx', function ($reader) {
 
@@ -28,7 +30,7 @@ class ItemController extends \BaseController {
 
                 // Loop through all rows
                 $sheet->each(function ($row) {
-                    // echo $row->cmmf . $row->size .'<br>';
+
 
                     if ($row->cmmf != null) {
                         //row in cmmf input is not blank so add/edit item
@@ -62,7 +64,7 @@ class ItemController extends \BaseController {
         });
 
         echo 'loading DB complete.<br><br>';
-        echo link_to_route('input','Go back.');
+        echo link_to_route('input', 'Go back.');
 
     }
 
@@ -70,28 +72,30 @@ class ItemController extends \BaseController {
      * input() takes Input::all and creates a table with info
      * @return associative array $data to views
      */
-    public function input(){
-    $validator = Validator::make(Input::all(),
-        array(
-            'cmmf' => 'required',
-            'quantity' => 'required'
-        )
-    );
-    if ($validator->fails()) {
-        return View::make('input')->with(array('response' => '<p style="color:red;">Please check your input and try again.</p>'));
-    } else {
-//broken up by newline and trimmed for whitespaces
-        $notFoundItems=array();
-        $cmmf = trim(Input::get('cmmf'));
+    public function input()
+    {
+        $validator = Validator::make(Input::all(),
+            array(
+                'cmmf' => 'required',
+                'quantity' => 'required'
+            )
+        );
+        if ($validator->fails()) {
+            return View::make('input')->with(array('response' => '<p style="color:red;">Please check your input and try again.</p>'));
+        } else {
 
-        Session::flash('cmmf', $cmmf);
+            $notFoundItems = array();
+            $cmmf = trim(Input::get('cmmf'));
+            //Stores the inputted cmmfs and quantities in Session variables incase user wants to use Back button to redo query
+            Session::flash('cmmf', $cmmf);
+            $quantity = trim(Input::get('quantity'));
+            Session::flash('quantity', $quantity);
 
-        $quantity = trim(Input::get('quantity'));
-        Session::flash('quantity', $quantity);
-        $quantities = explode(PHP_EOL, $quantity);
-        $cmmfs = explode(PHP_EOL, $cmmf);
-        //$stats is var storing the table data for the summary of the shipment
-        $stats = '<div class="CSSTableGenerator" >
+            //broken up by newline to be processes line by line
+            $quantities = explode(PHP_EOL, $quantity);
+            $cmmfs = explode(PHP_EOL, $cmmf);
+            //$stats is var storing the table data for the summary of the shipment
+            $stats = '<div class="CSSTableGenerator" >
                 <table id="stats" ><tr>
                         <td>
                             Total Pieces
@@ -113,24 +117,22 @@ class ItemController extends \BaseController {
 
                     </tr>';
 
-        //if the amount of cmmfs supplied doesn't match the amount of quantities supplied then state error
-        if (count($cmmfs) != count($quantities)) {
+            //if the amount of cmmfs supplied doesn't match the amount of quantities supplied then state error
+            if (count($cmmfs) != count($quantities)) {
 
-            return View::make('input', array('response' => '<p style="color:red;">ERROR: NUMBER OF CMMFS DO NOT MATCH THE NUMBER OF QUANTITIES SUPPLIED.</p>'));
-        }
+                return View::make('input', array('response' => '<p style="color:red;">ERROR: NUMBER OF CMMFS DO NOT MATCH THE NUMBER OF QUANTITIES SUPPLIED.</p>'));
+            }
 
 
-        $totalQuantity = null;
-        $totalCartons = null;
-        $totalWeight = null;
-        $totalPallets = null;
-        $totalSpaces = null;
-        $totalRoundedSpaces=null;
-        $totalRoundedPallets=null;
-        $totalAverageSpaces=null;
+            $totalQuantity = null;
+            $totalCartons = null;
+            $totalWeight = null;
+            $totalPallets = null;
+            $totalSpaces = null;
 
-        $i = 0;
-        $response = '<div class="CSSTableGenerator" >
+            //$i tracks the index for each line items of both the inputted cmmf and quantity array
+            $i = 0;
+            $response = '<div class="CSSTableGenerator" >
                 <table id="table" ><tr>
                         <td>
                             CMMF
@@ -162,15 +164,16 @@ class ItemController extends \BaseController {
 
 
                     </tr>';
-        //now checks each of the cmmfs (broken up by newline) supplied from input
-        foreach ($cmmfs as $cmmf) {
+            //now checks each of the cmmfs (broken up by newline) supplied from input
+            foreach ($cmmfs as $cmmf) {
 
-            $item = Item::where('cmmf', '=', $cmmf)->first();
-            //checks if cmmf
-            if ($item == null) {
-                array_push($notFoundItems,$cmmf);
-                //echo $cmmf . ' not in DB<br>';
-                $response .= '<tr>
+                $item = Item::where('cmmf', '=', $cmmf)->first();
+                //checks if cmmf
+                if ($item == null) {
+                    //item isn't found, so added to the $notFoundItems array to be displayed later and shows as NA for that row/item
+                    array_push($notFoundItems, $cmmf);
+                    //echo $cmmf . ' not in DB<br>';
+                    $response .= '<tr>
                         <td>
                             ' . $cmmf . '
                         </td>
@@ -201,67 +204,58 @@ class ItemController extends \BaseController {
 
                     </tr>';
 
-            } else {
-                $linequantity = $quantities[$i];
-                $varcmmf = $item->cmmf;
-                /* $varcase = $item->case;
-                 $varweight = $item->weight;
-                 $varcartonsperpallet = $item->cartonsperpallet;
-                 $varsize = $item->size;*/
+                } else {
+                    $linequantity = $quantities[$i];
+                    $varcmmf = $item->cmmf;
 
-                // add info to totals variables
-                $totalQuantity += $linequantity;
-                $totalCartons += ceil($item->getCartonCount($linequantity));
-                $totalWeight += $item->getWeight($linequantity);
-                $totalPallets += $item->getPalletCount($linequantity);
-                $totalSpaces += $item->getSpaceCount($linequantity);
 
-                //remove due to not needing estimated
-//                $totalRoundedPallets+=ceil($item->getPalletCount($linequantity));
-//                $totalRoundedSpaces+=$item->getSpaceCountPerBased($linequantity);
+                    // add info to totals variables
+                    $totalQuantity += $linequantity;
+                    $totalCartons += ceil($item->getCartonCount($linequantity));
+                    $totalWeight += $item->getWeight($linequantity);
+                    $totalPallets += $item->getPalletCount($linequantity);
+                    $totalSpaces += $item->getSpaceCount($linequantity);
+                    //end of info to totals variables
 
-                //end of info to totals variables
-
-                $response .= '<tr>
+                    $response .= '<tr>
                         <td>
                             ' . $varcmmf . '
                         </td>
                         <td >
                             ' . $linequantity . '
                         </td>
-                        <td>'.$item->size.'</td>
-                         <td>'.$item->case.'</td>
+                        <td>' . $item->size . '</td>
+                         <td>' . $item->case . '</td>
                         <td>
                        ' . ceil($item->getCartonCount($linequantity)) . '
                         </td>
                         <td>
-                        '.number_format($item->weight, 2, '.', '') .'
+                        ' . number_format($item->weight, 2, '.', '') . '
                         </td>
                         <td>
                        ' . number_format($item->getWeight($linequantity), 2, '.', '') . '
                         </td>
                         <td>
-                        '.$item->cartonsperpallet.'
+                        ' . $item->cartonsperpallet . '
                         </td>
                               <td>
-                    ' . number_format($item->getPalletCount($linequantity),2,'.','') . '
+                    ' . number_format($item->getPalletCount($linequantity), 2, '.', '') . '
                     </td>
 
                       <td>
-                  ' . number_format($item->getSpaceCount($linequantity),2,'.','') . '
+                  ' . number_format($item->getSpaceCount($linequantity), 2, '.', '') . '
                     </td>
 
 
                     </tr>';
 
 //                echo $item->getSpaceCount($quantities[$i]) . '<br>';
+                }
+                $i++;
             }
-            $i++;
-        }
 
 
-
-        $stats .= '<tr>
+            $stats .= '<tr>
 <td>' . $totalQuantity . '
 
 </td>
@@ -272,38 +266,27 @@ class ItemController extends \BaseController {
 ' . number_format($totalWeight, 2, '.', '') . '
 </td>
 <td>
-' . number_format($totalPallets,2,'.','') . '
+' . number_format($totalPallets, 2, '.', '') . '
 </td>
 <td>
-' . number_format($totalSpaces,2,'.','') . '
+' . number_format($totalSpaces, 2, '.', '') . '
 </td>
 
 
 </tr></table>
             </div>
             ';
-        $response .= '                </table>
+            $response .= '                </table>
             </div>
             ';
-        $data['stats'] = $stats;
-        $data['response'] = $response;
-        $data['missingitems']=array_unique($notFoundItems);
-        return View::make('output-table')->with($data);
+            $data['stats'] = $stats;
+            $data['response'] = $response;
+            $data['missingitems'] = array_unique($notFoundItems);
+            return View::make('output-table')->with($data);
+        }
+
+
     }
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
 
 
 }
