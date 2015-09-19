@@ -14,55 +14,9 @@ class ItemController extends \BaseController
         return View::make('input');
     }
 
-    public function join()
-    {
 
-        return View::make('join-input');
 
-    }
 
-    public function performjoin()
-    {
-        $validator = Validator::make(Input::all(),
-            array(
-                'items' => 'required'
-            )
-        );
-        if ($validator->fails()) {
-            return View::make('join-input')->with(array('response' => '<p style="color:red;">Please check your input and try again.</p>'));
-        } else {
-
-            $tempitems = trim(Input::get('items'));
-            Session::flash('items', $tempitems);
-            $items = explode(PHP_EOL, $tempitems);
-            $totalitems = count($items);
-            $i = 1;
-            $stringresponse = '';
-            $optionResult = Input::get('optionsRadios');
-            if ($optionResult == 'ordernumbers') {
-                $stringresponse .= 'om_f.ob_oid in ';
-            } elseif($optionResult=='shipmentnumbers') {
-                $stringresponse .= 'om_f.shipment in ';
-            }
-            if ($totalitems == 1) {
-                $stringresponse .= "('" . $items[0] . "')";
-            } else {
-                foreach ($items as $item) {
-                    if ($i == 1) {
-                        $stringresponse .= "('" . $item . "',";
-                    } elseif ($i == $totalitems) {
-                        $stringresponse .= "'" . $item . "')";
-                    } else {
-                        $stringresponse .= "'" . $item . "',";
-                    }
-                    $i++;
-                }
-            }
-            return View::make('join-output')->with(array('response' => $stringresponse));
-
-        }
-
-    }
 
     /**
      * load Grabs the excel file items.xlsx and adds/update the cmmfs in the DB
