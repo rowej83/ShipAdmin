@@ -88,7 +88,7 @@ class AqbController extends \BaseController
 
             if ($addSHP != true) {
                 if ($i == 1) {
-                    $stringresponse .= "('" . $item . "',";
+                    $stringresponse .= "('" . $item . "')";
                 } elseif ($i == $totalitems) {
                     $stringresponse .= "'" . $item . "')";
                 } else {
@@ -96,7 +96,7 @@ class AqbController extends \BaseController
                 }
             } else {
                 if ($i == 1) {
-                    $stringresponse .= "('" . 'SHP' . $item . "',";
+                    $stringresponse .= "('" . 'SHP' . $item . "')";
                 } elseif ($i == $totalitems) {
                     $stringresponse .= "'" . 'SHP' . $item . "')";
                 } else {
@@ -118,7 +118,7 @@ class AqbController extends \BaseController
         foreach ($ordersArray as $item) {
 
             if ($i == 1) {
-                $stringresponse .= "('" . $item . "',";
+                $stringresponse .= "('" . $item . "')";
             } elseif ($i == $totalitems) {
                 $stringresponse .= "'" . $item . "')";
             } else {
@@ -160,7 +160,7 @@ class AqbController extends \BaseController
         foreach ($itemArray as $item) {
 
             if ($i == 1) {
-                $stringresponse .= "('" . $item . "',";
+                $stringresponse .= "('" . $item . "')";
             } elseif ($i == $totalitems) {
                 $stringresponse .= "'" . $item . "')";
             } else {
