@@ -42,8 +42,12 @@
                 </label>
                 <input type="checkbox" name="addShipments" id="addShipments" value="addShipments"> Add "SHP" to items<br>
                 <label for="option-three" class="pure-radio">
-                    <input id="option-three" type="radio" name="optionsRadios" value="none">
-                    None ( Only Join the list together )
+                    <input id="option-three" type="radio" name="optionsRadios" value="commas">
+                    Join with commas and no space
+                </label>
+                <label for="option-four" class="pure-radio">
+                    <input id="option-four" type="radio" name="optionsRadios" value="none">
+                    None ( Only Join the list together for AQB )
                 </label>
             </div>
             <div class="pure-u-1-3">

@@ -42,6 +42,10 @@ class AqbController extends \BaseController
 
                     $stringresponse = $this->joinShipments($tempitems, Input::get('addShipments') );
                     break;
+                case 'commas':
+
+                    $stringresponse = $this->joinCommas($tempitems );
+                    break;
 
 
                 default:
@@ -119,6 +123,26 @@ class AqbController extends \BaseController
                 $stringresponse .= "'" . $item . "')";
             } else {
                 $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+
+    private function joinCommas($itemArray){
+        $stringresponse = '';
+
+        $i = 1;
+        $totalitems = count($itemArray);
+        foreach ($itemArray as $item) {
+
+            if ($i == 1) {
+                $stringresponse .= $item;
+            } elseif ($i == $totalitems) {
+                $stringresponse .=$item;
+            } else {
+                $stringresponse .= $item . ",";
             }
             $i++;
         }
