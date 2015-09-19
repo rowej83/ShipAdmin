@@ -40,6 +40,7 @@
                     <input id="option-two" type="radio" name="optionsRadios" value="shipmentnumbers">
                     Shipment Numbers
                 </label>
+                <input type="checkbox" name="addShipments" id="addShipments" value="addShipments"> Add "SHP" to items<br>
                 <label for="option-three" class="pure-radio">
                     <input id="option-three" type="radio" name="optionsRadios" value="none">
                     None ( Only Join the list together )
@@ -80,6 +81,11 @@
 
 
             });
+
+
+
+
+
 
         });
     </script>
