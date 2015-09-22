@@ -15,15 +15,73 @@ class ItemController extends \BaseController
     }
 
 
-
-
-
     /**
      * load Grabs the excel file items.xlsx and adds/update the cmmfs in the DB
      */
     public function load()
     {
 
+        $itemCount = 0;
+        Excel::load(storage_path() . '\items.xlsx', function ($reader) use (&$itemCount) {
+
+
+// Loop through all sheets
+            $reader->each(function ($sheet) use (&$itemCount) {
+
+                // Loop through all rows
+                $sheet->each(function ($row) use (&$itemCount) {
+
+
+                    if ($row->cmmf != null) {
+                        //row in cmmf input is not blank so add/edit item
+                        $item = Item::where('cmmf', '=', $row->cmmf)->first();
+                        if ($item == null) {
+                            //item doesn't exist yet
+                            $item = new Item();
+                            $item->cmmf = $row->cmmf;
+                            $item->case = $row->case_pack;
+                            $item->weight = $row->weight_lb;
+                            $item->size = $row->size;
+                            $item->cartonsperpallet = $row->ctnspallet;
+                            $item->save();
+                            unset($item);
+                            $itemCount++;
+                        } else {
+                            //cmmf already exists..just update it
+                            $item->cmmf = $row->cmmf;
+                            $item->case = $row->case_pack;
+                            $item->weight = $row->weight_lb;
+                            $item->size = $row->size;
+                            $item->cartonsperpallet = $row->ctnspallet;
+                            $item->save();
+                            unset($item);
+                            $itemCount++;
+                        }
+
+                    }
+
+                });
+
+            });
+        });
+
+        $data['itemCount'] = $itemCount;
+        return View::make('load-list-done', $data);
+
+    }
+
+    public function silentReload()
+    {
+        Session::reflash();
+        $this->silentLoad();
+        return Redirect::route('estimateHome');
+
+    }
+
+    public function silentLoad()
+    {
+
+//used in order to reload the spreadsheet and immediately go back to the save ( in sessions ) query.
 
         Excel::load(storage_path() . '\items.xlsx', function ($reader) {
 
@@ -48,6 +106,7 @@ class ItemController extends \BaseController
                             $item->cartonsperpallet = $row->ctnspallet;
                             $item->save();
                             unset($item);
+                            //   $itemCount++;
                         } else {
                             //cmmf already exists..just update it
                             $item->cmmf = $row->cmmf;
@@ -57,6 +116,7 @@ class ItemController extends \BaseController
                             $item->cartonsperpallet = $row->ctnspallet;
                             $item->save();
                             unset($item);
+                            // $itemCount++;
                         }
 
                     }
@@ -66,8 +126,9 @@ class ItemController extends \BaseController
             });
         });
 
-        echo 'loading DB complete.<br><br>';
-        echo link_to_route('input', 'Go back.');
+        //    $data['itemCount']=$itemCount;
+        //   return View::make('load-list-done', $data);
+
 
     }
 
@@ -290,6 +351,30 @@ class ItemController extends \BaseController
 
 
     }
+
+
+    public function deleteDBForm(){
+
+return View::make('deleteDBForm');
+    }
+
+    public function deleteDBSubmission(){
+$result=Input::get('delete');
+        
+        if($result!='Y-E-S'){
+            $data['response']='<span style="color:red">DB reset has failed. Y-E-S was not entered.</span>';
+            return  View::make('input', $data);
+        }else{
+
+            Item::truncate();
+
+            $data['response']='<span style="color:red">All items in the DB have been cleared.</span>';
+          return  View::make('input', $data);
+        }
+
+    }
+
+
 
 
 }

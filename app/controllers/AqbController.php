@@ -27,7 +27,7 @@ class AqbController extends \BaseController
         } else {
 
             $tempitems = $this->prepareArray();
-            Session::flash('items',trim(Input::get('items'))    );
+            Session::flash('items', trim(Input::get('items')));
 
             $totalitems = count($tempitems);
             $i = 1;
@@ -40,11 +40,11 @@ class AqbController extends \BaseController
                     break;
                 case 'shipmentnumbers':
 
-                    $stringresponse = $this->joinShipments($tempitems, Input::get('addShipments') );
+                    $stringresponse = $this->joinShipments($tempitems, Input::get('addShipments'));
                     break;
                 case 'commas':
 
-                    $stringresponse = $this->joinCommas($tempitems );
+                    $stringresponse = $this->joinCommas($tempitems);
                     break;
 
 
@@ -87,16 +87,21 @@ class AqbController extends \BaseController
         foreach ($shipmentArray as $item) {
 
             if ($addSHP != true) {
-                if ($i == 1) {
-                    $stringresponse .= "('" . $item . "')";
+
+                if ($i == 1 && $totalitems == 1) {
+                    return $stringresponse .= "('" . $item . "')";
+                } elseif ($i == 1) {
+                    $stringresponse .= "('" . $item . "',";
                 } elseif ($i == $totalitems) {
                     $stringresponse .= "'" . $item . "')";
                 } else {
                     $stringresponse .= "'" . $item . "',";
                 }
             } else {
-                if ($i == 1) {
-                    $stringresponse .= "('" . 'SHP' . $item . "')";
+                if ($i == 1 && $totalitems == 1) {
+                    return $stringresponse .= "('" . 'SHP' . $item . "')";
+                } elseif ($i == 1) {
+                    $stringresponse .= "('" . 'SHP' . $item . "',";
                 } elseif ($i == $totalitems) {
                     $stringresponse .= "'" . 'SHP' . $item . "')";
                 } else {
@@ -116,9 +121,11 @@ class AqbController extends \BaseController
         $i = 1;
         $totalitems = count($ordersArray);
         foreach ($ordersArray as $item) {
-
-            if ($i == 1) {
-                $stringresponse .= "('" . $item . "')";
+            if ($i == 1 && $totalitems == 1) {
+           return     $stringresponse .= "('" . $item . "')";
+            }
+            elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
             } elseif ($i == $totalitems) {
                 $stringresponse .= "'" . $item . "')";
             } else {
@@ -130,7 +137,8 @@ class AqbController extends \BaseController
 
     }
 
-    private function joinCommas($itemArray){
+    private function joinCommas($itemArray)
+    {
         $stringresponse = '';
 
         $i = 1;
@@ -140,7 +148,7 @@ class AqbController extends \BaseController
             if ($i == 1) {
                 $stringresponse .= $item;
             } elseif ($i == $totalitems) {
-                $stringresponse .=$item;
+                $stringresponse .= $item;
             } else {
                 $stringresponse .= $item . ",";
             }
@@ -158,9 +166,11 @@ class AqbController extends \BaseController
         $i = 1;
         $totalitems = count($itemArray);
         foreach ($itemArray as $item) {
-
-            if ($i == 1) {
-                $stringresponse .= "('" . $item . "')";
+            if ($i == 1 && $totalitems == 1) {
+                return      $stringresponse .= "('" . $item . "')";
+            }
+            elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
             } elseif ($i == $totalitems) {
                 $stringresponse .= "'" . $item . "')";
             } else {

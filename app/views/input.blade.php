@@ -11,8 +11,15 @@
 <body>
 
 <div style="width:800px;margin:0 auto;">
-<div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
-<div class="pure-u-1">
+
+
+    @include('main-menu-partial')
+
+@include('sub-menu-ship-estimate')
+
+    <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
+<div class="pure-u-1"><b style="color:red" id="reloadText"></b></div>
+    <div class="pure-u-1">
 <h1>Shipment Estimator <small style="font-size: .4em;color:grey;">v1.0</small>
 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
 </h1>
@@ -67,6 +74,11 @@ Instructions: Copy a column of CMMFs ( without headings ) from excel into the te
                 $("#cmmf").focus();
 
                 });
+
+                    $("#reload").click(function(e){
+                       $('#reloadText').text('Loading items from the spreadsheet to the Database. Do not click again. Please wait..');
+                    });
+
 
                 });
                 </script>
