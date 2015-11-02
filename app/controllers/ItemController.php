@@ -270,6 +270,8 @@ class ItemController extends \BaseController
 
                 } else {
                     $linequantity = $quantities[$i];
+                    $linequantity=str_replace(',','',$linequantity);
+                    $linequantity=intval($linequantity);
                     $varcmmf = $item->cmmf;
 
 

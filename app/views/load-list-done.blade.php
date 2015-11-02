@@ -19,7 +19,10 @@
           <?php  echo 'Loading of DB complete.<br><br>';
 
                 echo $itemCount.' items are currently in the DB'.'<br><br>';
-            echo link_to_route('estimateHome', 'Go back.'); ?>
+           
+           ?>
+            <a href="<?php echo route('estimateHome'); ?>" class="pure-button">Go back</a>
+
                </div>
     </div>
 

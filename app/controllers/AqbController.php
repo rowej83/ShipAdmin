@@ -144,9 +144,11 @@ class AqbController extends \BaseController
         $i = 1;
         $totalitems = count($itemArray);
         foreach ($itemArray as $item) {
-
-            if ($i == 1) {
-                $stringresponse .= $item;
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= $item;
+            }
+            elseif ($i == 1) {
+                $stringresponse .= $item.',';
             } elseif ($i == $totalitems) {
                 $stringresponse .= $item;
             } else {

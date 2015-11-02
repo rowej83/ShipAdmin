@@ -14,7 +14,7 @@
     @include('main-menu-partial')
     <div class="pure-g" style="margin-top:20px;margin-bottom:20px;">
         <div class="pure-g" style="margin-top:20px;margin-bottom:20px;"><div class="pure-u-1">
-                <a href="<?php link_to_route('joinHome');?>">Go back with Input saved to re-Query</a>
+                <a class="pure-button" href="<?php link_to_route('joinHome');?>">Go back with Input saved to re-Query</a>
             </div>
             <div class="pure-u-1">
                 <h1>Advanced Query Builder<small style="font-size: .4em;color:grey;"> v1.0</small>

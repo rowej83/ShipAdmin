@@ -77,6 +77,7 @@ Instructions: Copy a column of CMMFs ( without headings ) from excel into the te
 
                     $("#reload").click(function(e){
                        $('#reloadText').text('Loading items from the spreadsheet to the Database. Do not click again. Please wait..');
+                  $(this).hide();
                     });
 
 

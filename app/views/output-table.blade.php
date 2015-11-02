@@ -37,8 +37,8 @@
 
 <div class="pure-g" style="margin-top:20px;margin-bottom:20px;"><div class="pure-u-1">
             Links: <br><br>
-            <a href="<?php echo route('input');?>">Go back with input saved to re-Query</a><br><br>
-            <a id="reload" href="<?php echo route('silentReload');?>">Go back with input saved to re-Query AND reload spreadsheet with any new added items.</a>
+            <a class= "pure-button" href="<?php echo route('input');?>">Go back with input saved to re-Query</a><br><br>
+            <a  class= "pure-button" id="reload" href="<?php echo route('silentReload');?>">Go back with input saved to re-Query AND reload spreadsheet with any new added items.</a>
         </div></div>
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1"><b style="color:red" id="reloadText"></b></div>
@@ -94,6 +94,7 @@
 
         $("#reload").click(function(e){
             $('#reloadText').text('Loading items from the spreadsheet to the Database. Do not click again. Please wait..');
+            $(this).hide();
         });
 
 
