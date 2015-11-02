@@ -13,7 +13,7 @@
     @include('main-menu-partial')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Advanced Query Builder<small style="font-size: .4em;color:grey;"> v1.0</small>
+            <h1>Advanced Query Builder<small style="font-size: .4em;color:grey;"> v1.1</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
             Instructions: Paste a list of items that will be joined with ' ' and ,'s to be pasted into an advanced query in Viaware.
@@ -41,15 +41,17 @@
                     <input id="option-two" type="radio" name="optionsRadios" value="shipmentnumbers">
                     Shipment Numbers
                 </label>
-               <span id="addShipments" style="display:none;"> <input type="checkbox" style="" name="addShipments" id="" value="addShipments"> Add "SHP" to items<br></span>
-                <label for="option-three" class="pure-radio">
-                    <input id="option-three" type="radio" name="optionsRadios" value="commas">
-                    Join with commas and no space
-                </label>
                 <label for="option-four" class="pure-radio">
                     <input id="option-four" type="radio" name="optionsRadios" value="none">
                     None ( Join for AQB only )
                 </label>
+                <label for="option-three" class="pure-radio">
+                    <input id="option-three" type="radio" name="optionsRadios" value="commas">
+                    Join with commas and no space
+                </label>
+               <hr>
+                <b>Options:</b>
+                <span id="addShipments" style="margin-top:20px;display: block;"> <input type="checkbox" style="" name="addShipments" id="" value="addShipments"> Add "SHP" to items<br></span>
             </div>
             <div class="pure-u-1-3">
 
@@ -87,14 +89,14 @@
 
             });
 
-            $("input:radio").click(function(e){
-            if($(this).attr("id")=="option-two"){
-                   $('#addShipments').show();
-                }else{
-                    $('#addShipments').hide();
-                }
-
-            });
+//            $("input:radio").click(function(e){
+//            if($(this).attr("id")=="option-two"){
+//                   $('#addShipments').show();
+//                }else{
+//                    $('#addShipments').hide();
+//                }
+//
+//            });
 
 
 

@@ -44,7 +44,7 @@ class AqbController extends \BaseController
                     break;
                 case 'commas':
 
-                    $stringresponse = $this->joinCommas($tempitems);
+                    $stringresponse = $this->joinCommas($tempitems,Input::get('addShipments'));
                     break;
 
 
@@ -78,7 +78,7 @@ class AqbController extends \BaseController
 
     }
 
-    private function joinShipments($shipmentArray, $addSHP)
+    private function joinShipments($shipmentArray, $addSHPTest)
     {
 
         $stringresponse = 'om_f.shipment in ';
@@ -86,28 +86,18 @@ class AqbController extends \BaseController
         $totalitems = count($shipmentArray);
         foreach ($shipmentArray as $item) {
 
-            if ($addSHP != true) {
+
 
                 if ($i == 1 && $totalitems == 1) {
-                    return $stringresponse .= "('" . $item . "')";
+                    return $stringresponse .= "('" . $this->addSHP($item,$addSHPTest) . "')";
                 } elseif ($i == 1) {
-                    $stringresponse .= "('" . $item . "',";
+                    $stringresponse .= "('" . $this->addSHP($item,$addSHPTest) . "',";
                 } elseif ($i == $totalitems) {
-                    $stringresponse .= "'" . $item . "')";
+                    $stringresponse .= "'" . $this->addSHP($item,$addSHPTest) . "')";
                 } else {
-                    $stringresponse .= "'" . $item . "',";
+                    $stringresponse .= "'" . $this->addSHP($item,$addSHPTest) . "',";
                 }
-            } else {
-                if ($i == 1 && $totalitems == 1) {
-                    return $stringresponse .= "('" . 'SHP' . $item . "')";
-                } elseif ($i == 1) {
-                    $stringresponse .= "('" . 'SHP' . $item . "',";
-                } elseif ($i == $totalitems) {
-                    $stringresponse .= "'" . 'SHP' . $item . "')";
-                } else {
-                    $stringresponse .= "'" . 'SHP' . $item . "',";
-                }
-            }
+
             $i++;
         }
         return $stringresponse;
@@ -137,7 +127,7 @@ class AqbController extends \BaseController
 
     }
 
-    private function joinCommas($itemArray)
+    private function joinCommas($itemArray,$addSHPTest)
     {
         $stringresponse = '';
 
@@ -145,21 +135,29 @@ class AqbController extends \BaseController
         $totalitems = count($itemArray);
         foreach ($itemArray as $item) {
             if ($i == 1 && $totalitems == 1) {
-                return $stringresponse .= $item;
+                return $stringresponse .= $this->addSHP($item,$addSHPTest);
+
             }
             elseif ($i == 1) {
-                $stringresponse .= $item.',';
+                $stringresponse .= $this->addSHP($item,$addSHPTest).',';
             } elseif ($i == $totalitems) {
-                $stringresponse .= $item;
+                $stringresponse .= $this->addSHP($item,$addSHPTest);
             } else {
-                $stringresponse .= $item . ",";
+                $stringresponse .= $this->addSHP($item,$addSHPTest) . ",";
             }
             $i++;
         }
         return $stringresponse;
 
     }
+ function addSHP($value, $test){
 
+   if($test==true){
+    return 'SHP'.$value;}
+    else{
+        return $value;
+    }
+}
     private function simpleJoin($itemArray)
     {
 
