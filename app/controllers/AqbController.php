@@ -8,6 +8,79 @@
  */
 class   AqbController extends \BaseController
 {
+
+    public function parseGetPDF(){
+        return View::make('parsepdf-input');
+
+    }
+
+    public function parsePostPDF(){
+
+        $validator = Validator::make(Input::all(),
+            array(
+                'packinglist' => 'required'
+            )
+        );
+        if(!$validator->fails()) {
+
+            //validation passes
+            $file = Input::file('packinglist');
+            $parser = new \Smalot\PdfParser\Parser();
+            $pdf = $parser->parseFile($file);
+            $pages = $pdf->getPages();
+            $arrayOfPos = array();
+
+            foreach ($pages as $page) {
+                $text = nl2br($page->getText());
+                $tempPDF = explode('<br />', $text);
+                $getPO = explode(':', $tempPDF[10]);
+                $PO = trim($getPO[1]);
+                array_push($arrayOfPos, $PO);
+
+            }
+            $totalOfPos = count($arrayOfPos);
+            $queryString = $this->joinKohlsParsePO($arrayOfPos);
+        //    $data['POs'] = $arrayOfPos;
+            $returnPOString='';
+            foreach($arrayOfPos as $returnPO){
+                $returnPOString.=$returnPO.'<br>';
+            }
+            $data['POs']=$returnPOString;
+            $data['totalOfPOs'] = $totalOfPos;
+            $data['queryString'] = $queryString;
+            return View::make('parsepdf-output',$data);
+        }else{
+//validation fails
+            return View::make('parsepdf-input')->with(array('response' => '<p style="color:red;">Please select a packing list pdf to parse.</p>'));
+
+        }
+
+
+    }
+
+    private function joinKohlsParsePO($ordersArray)
+    {
+
+        $stringresponse = 'om_f.ship_po in ';
+        $i = 1;
+        $totalitems = count($ordersArray);
+        foreach ($ordersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return     $stringresponse .= "('" . $item . "')";
+            }
+            elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+
     public function join()
     {
 
@@ -29,7 +102,7 @@ class   AqbController extends \BaseController
             $tempitems = $this->prepareArray();
             Session::flash('items', trim(Input::get('items')));
 
-            $totalitems = count($tempitems);
+          //  $totalitems = count($tempitems);
             $i = 1;
             $stringresponse = '';
             $optionResult = Input::get('optionsRadios');
@@ -72,7 +145,10 @@ class   AqbController extends \BaseController
 //                    $i++;
 //                }
 //            }
-            return View::make('join-output')->with(array('response' => $stringresponse));
+            $data['response']=$stringresponse;
+            $data['itemCount']=count($tempitems);
+//            return View::make('join-output')->with(array('response' => $stringresponse));
+            return View::make('join-output',$data);
 
         }
 

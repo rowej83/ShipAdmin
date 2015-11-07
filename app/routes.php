@@ -11,4 +11,7 @@ Route::post('deleteDB',['as'=>'deleteDBSubmission','uses'=>'ItemController@delet
 
 Route::get('load', ['as'=>'load','uses'=>'ItemController@load']);
 
+Route::get('parsePDF',['as'=>'parseGetPDF','uses'=>'AqbController@parseGetPDF']);
+Route::post('parsePostPDF',['as'=>'parsePostPDF','uses'=>'AqbController@parsePostPDF']);
+
 
