@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Parse Kohls Packing Slips</title>
+    <title>Add Kohls Packing Slips to DB</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
     <script src="<?php echo URL::asset('js/scripts.js'); ?>"></script>
@@ -13,11 +13,11 @@
     @include('main-menu-partial')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Kohls Packing Slip Parser
+            <h1>Add Kohls Packing Slips to DB
                 <small style="font-size: .4em;color:grey;"> v1.0</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
-            Instructions: Upload a Kohls.com packing slip and it will return POs
+            Instructions: Upload a Kohls.com packing slip to add POs to the DB
         </div>
     </div>
     @if(isset($response))
@@ -29,7 +29,7 @@
             </div>
         </div>
     @endif
-    <form class="pure-form" action="parsePostPDF" method="post" enctype="multipart/form-data">
+    <form class="pure-form" action="parseKohlsPDF" method="post" enctype="multipart/form-data">
         <div class="pure-g" style="margin:30px;">
 
             {{ Form::file('packinglist', ['class' => 'form-control']) }}
@@ -38,7 +38,7 @@
                         $('textarea').val('');
                         }</script>--}}
         <div class="pure-g" style="margin-top:50px;">
-            <div class="pure-1"><input type="submit" value="Parse Packing Slip" class="pure-button-primary pure-button"
+            <div class="pure-1"><input type="submit" value="Add POs to DB" class="pure-button-primary pure-button"
                                        style="" class="pure-button"/></div>
         </div>
     </form>

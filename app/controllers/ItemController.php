@@ -21,52 +21,53 @@ class ItemController extends \BaseController
     public function load()
     {
 
-        $itemCount = 0;
-        Excel::load(storage_path() . '\items.xlsx', function ($reader) use (&$itemCount) {
+
+        Excel::selectSheets('Sheet1')->load(storage_path() . '\items.xlsx', function ($reader) {
 
 
 // Loop through all sheets
-            $reader->each(function ($sheet) use (&$itemCount) {
+            $reader->each(function ($row) {
 
                 // Loop through all rows
-                $sheet->each(function ($row) use (&$itemCount) {
+                //     $sheet->each(function ($row)  {
 
 
-                    if ($row->cmmf != null) {
-                        //row in cmmf input is not blank so add/edit item
-                        $item = Item::where('cmmf', '=', $row->cmmf)->first();
-                        if ($item == null) {
-                            //item doesn't exist yet
-                            $item = new Item();
-                            $item->cmmf = $row->cmmf;
-                            $item->case = $row->case_pack;
-                            $item->weight = $row->weight_lb;
-                            $item->size = $row->size;
-                            $item->cartonsperpallet = $row->ctnspallet;
-                            $item->save();
-                            unset($item);
-                            $itemCount++;
-                        } else {
-                            //cmmf already exists..just update it
-                            $item->cmmf = $row->cmmf;
-                            $item->case = $row->case_pack;
-                            $item->weight = $row->weight_lb;
-                            $item->size = $row->size;
-                            $item->cartonsperpallet = $row->ctnspallet;
-                            $item->save();
-                            unset($item);
-                            $itemCount++;
-                        }
-
+                if ($row->cmmf != null) {
+                    //row in cmmf input is not blank so add/edit item
+                    $item = Item::where('cmmf', '=', $row->cmmf)->first();
+                    if ($item == null) {
+                        //item doesn't exist yet
+                        $item = new Item();
+                        $item->cmmf = $row->cmmf;
+                        $item->case = $row->case_pack;
+                        $item->weight = $row->weight_lb;
+                        $item->size = $row->size;
+                        $item->cartonsperpallet = $row->ctnspallet;
+                        $item->save();
+                        unset($item);
+                        //      $itemCount++;
+                    } else {
+                        //cmmf already exists..just update it
+                        $item->cmmf = $row->cmmf;
+                        $item->case = $row->case_pack;
+                        $item->weight = $row->weight_lb;
+                        $item->size = $row->size;
+                        $item->cartonsperpallet = $row->ctnspallet;
+                        $item->save();
+                        unset($item);
+                        //   $itemCount++;
                     }
 
-                });
+                }
+
+                //  });
 
             });
         });
 
-        $data['itemCount'] = $itemCount;
-        return View::make('load-list-done', $data);
+
+        //  $data['itemCount'] = $itemCount;
+        return View::make('load-list-done');
 
     }
 
@@ -83,45 +84,45 @@ class ItemController extends \BaseController
 
 //used in order to reload the spreadsheet and immediately go back to the save ( in sessions ) query.
 
-        Excel::load(storage_path() . '\items.xlsx', function ($reader) {
+        Excel::selectSheets('Sheet1')->load(storage_path() . '\items.xlsx', function ($reader) {
 
 
 // Loop through all sheets
-            $reader->each(function ($sheet) {
+            $reader->each(function ($row) {
 
                 // Loop through all rows
-                $sheet->each(function ($row) {
+                //     $sheet->each(function ($row)  {
 
 
-                    if ($row->cmmf != null) {
-                        //row in cmmf input is not blank so add/edit item
-                        $item = Item::where('cmmf', '=', $row->cmmf)->first();
-                        if ($item == null) {
-                            //item doesn't exist yet
-                            $item = new Item();
-                            $item->cmmf = $row->cmmf;
-                            $item->case = $row->case_pack;
-                            $item->weight = $row->weight_lb;
-                            $item->size = $row->size;
-                            $item->cartonsperpallet = $row->ctnspallet;
-                            $item->save();
-                            unset($item);
-                            //   $itemCount++;
-                        } else {
-                            //cmmf already exists..just update it
-                            $item->cmmf = $row->cmmf;
-                            $item->case = $row->case_pack;
-                            $item->weight = $row->weight_lb;
-                            $item->size = $row->size;
-                            $item->cartonsperpallet = $row->ctnspallet;
-                            $item->save();
-                            unset($item);
-                            // $itemCount++;
-                        }
-
+                if ($row->cmmf != null) {
+                    //row in cmmf input is not blank so add/edit item
+                    $item = Item::where('cmmf', '=', $row->cmmf)->first();
+                    if ($item == null) {
+                        //item doesn't exist yet
+                        $item = new Item();
+                        $item->cmmf = $row->cmmf;
+                        $item->case = $row->case_pack;
+                        $item->weight = $row->weight_lb;
+                        $item->size = $row->size;
+                        $item->cartonsperpallet = $row->ctnspallet;
+                        $item->save();
+                        unset($item);
+                        //      $itemCount++;
+                    } else {
+                        //cmmf already exists..just update it
+                        $item->cmmf = $row->cmmf;
+                        $item->case = $row->case_pack;
+                        $item->weight = $row->weight_lb;
+                        $item->size = $row->size;
+                        $item->cartonsperpallet = $row->ctnspallet;
+                        $item->save();
+                        unset($item);
+                        //   $itemCount++;
                     }
 
-                });
+                }
+
+                //  });
 
             });
         });
@@ -270,8 +271,8 @@ class ItemController extends \BaseController
 
                 } else {
                     $linequantity = $quantities[$i];
-                    $linequantity=str_replace(',','',$linequantity);
-                    $linequantity=intval($linequantity);
+                    $linequantity = str_replace(',', '', $linequantity);
+                    $linequantity = intval($linequantity);
                     $varcmmf = $item->cmmf;
 
 
@@ -355,28 +356,28 @@ class ItemController extends \BaseController
     }
 
 
-    public function deleteDBForm(){
+    public function deleteDBForm()
+    {
 
-return View::make('deleteDBForm');
+        return View::make('deleteDBForm');
     }
 
-    public function deleteDBSubmission(){
-$result=Input::get('delete');
-        
-        if($result!='Y-E-S'){
-            $data['response']='<span style="color:red">DB reset has failed. Y-E-S was not entered.</span>';
-            return  View::make('input', $data);
-        }else{
+    public function deleteDBSubmission()
+    {
+        $result = Input::get('delete');
+
+        if ($result != 'Y-E-S') {
+            $data['response'] = '<span style="color:red">DB reset has failed. Y-E-S was not entered.</span>';
+            return View::make('input', $data);
+        } else {
 
             Item::truncate();
 
-            $data['response']='<span style="color:red">All items in the DB have been cleared.</span>';
-          return  View::make('input', $data);
+            $data['response'] = '<span style="color:red">All items in the DB have been cleared.</span>';
+            return View::make('input', $data);
         }
 
     }
-
-
 
 
 }

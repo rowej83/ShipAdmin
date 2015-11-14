@@ -13,15 +13,18 @@
     @include('main-menu-partial')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Advanced Query Builder<small style="font-size: .4em;color:grey;"> v1.1</small>
+            <h1>Advanced Query Builder
+                <small style="font-size: .4em;color:grey;"> v1.1</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
-            Instructions: Paste a list of items that will be joined with ' ' and ,'s to be pasted into an advanced query in Viaware.
+            Instructions: Paste a list of items that will be joined with ' ' and ,'s to be pasted into an advanced query
+            in Viaware.
 
         </div>
     </div>
     @if(isset($response))
-        <div class="pure-g" style="margin-bottom:15px;"><div class="pure-u-1" >
+        <div class="pure-g" style="margin-bottom:15px;">
+            <div class="pure-u-1">
 
                 {{$response}}
 
@@ -34,7 +37,7 @@
                 <b style="margin-top:8px;display:block;">Build Query using:</b>
                 <label for="option-one" class="pure-radio">
                     <input id="option-one" type="radio" name="optionsRadios" value="ordernumbers" checked>
-                   Outbound Order Numbers
+                    Outbound Order Numbers
                 </label>
 
                 <label for="option-two" class="pure-radio">
@@ -49,15 +52,19 @@
                     <input id="option-three" type="radio" name="optionsRadios" value="commas">
                     Join with commas and no space
                 </label>
-               <hr>
+                <hr>
                 <b>Options:</b>
-                <span id="addShipments" style="margin-top:20px;display: block;"> <input type="checkbox" style="" name="addShipments" id="" value="addShipments"> Add "SHP" to items<br></span>
+                <span id="addShipments" style="margin-top:20px;display: block;"> <input type="checkbox" style=""
+                                                                                        name="addShipments" id=""
+                                                                                        value="addShipments"> Add "SHP" to items<br></span>
             </div>
             <div class="pure-u-1-3">
 
-                <label for="items" style="display: block;margin-bottom:10px;"><b>Items to be joined</b> <small>(Seperated by new line)</small></label>
-                <textarea  id="items" placeholder="paste column of items to be joined" type="text" name="items" style="overflow:auto;height:200px"><?php echo Session::get('items'); ?></textarea>
-
+                <label for="items" style="display: block;margin-bottom:10px;"><b>Items to be joined</b>
+                    <small>(Seperated by new line)</small>
+                </label>
+                <textarea id="items" placeholder="paste column of items to be joined" type="text" name="items"
+                          style="overflow:auto;height:200px"><?php echo Session::get('items'); ?></textarea>
 
 
             </div>
@@ -67,7 +74,12 @@
         {{--<script>     function reset(){
                         $('textarea').val('');
                         }</script>--}}
-        <div class="pure-g" style="margin-top:50px;"><div class="pure-1">   <input type="submit" value="Build Query" class="pure-button-primary pure-button" style="" class="pure-button"/><input type="button" value="Reset" onclick="reset"  id="reset" style="margin-left:10px;" class="pure-button reset"/></div></div>
+        <div class="pure-g" style="margin-top:50px;">
+            <div class="pure-1"><input type="submit" value="Build Query" class="pure-button-primary pure-button"
+                                       style="" class="pure-button"/><input type="button" value="Reset" onclick="reset"
+                                                                            id="reset" style="margin-left:10px;"
+                                                                            class="pure-button reset"/></div>
+        </div>
     </form>
 
 
@@ -77,11 +89,11 @@
     {{--}--}}
     {{--});</script>--}}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             //doesn't wait for images, style sheets etc..
             //is called after the DOM has been initialized
 //                    alert("hello");
-            $(".reset").click(function(e){
+            $(".reset").click(function (e) {
                 e.preventDefault();
                 $("textarea").val('');
                 $("#items").focus();
@@ -97,10 +109,6 @@
 //                }
 //
 //            });
-
-
-
-
 
 
         });

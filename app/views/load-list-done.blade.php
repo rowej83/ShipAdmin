@@ -13,19 +13,19 @@
     @include('main-menu-partial')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Shipment Estimator<small style="font-size: .4em;color:grey;"> v1.0</small>
+            <h1>Shipment Estimator
+                <small style="font-size: .4em;color:grey;"> v1.0</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
-          <?php  echo 'Loading of DB complete.<br><br>';
+            <?php  echo 'Loading of DB complete.<br><br>';
 
-                echo $itemCount.' items are currently in the DB'.'<br><br>';
-           
-           ?>
+            //  echo $itemCount.' items are currently in the DB'.'<br><br>';
+
+            ?>
             <a href="<?php echo route('estimateHome'); ?>" class="pure-button">Go back</a>
 
-               </div>
+        </div>
     </div>
-
 
 
     {{--<script>$("form").keypress(function(ev){--}}
@@ -34,21 +34,17 @@
     {{--}--}}
     {{--});</script>--}}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             //doesn't wait for images, style sheets etc..
             //is called after the DOM has been initialized
 //                    alert("hello");
-            $(".reset").click(function(e){
+            $(".reset").click(function (e) {
                 e.preventDefault();
                 $("textarea").val('');
                 $("#items").focus();
 
 
             });
-
-
-
-
 
 
         });

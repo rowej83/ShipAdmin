@@ -28,12 +28,12 @@ class Item extends Eloquent
      * @param int $ppp
      * @return float
      */
-    public function getSpaceCountPerBased($quantity,$ppp=35)
+    public function getSpaceCountPerBased($quantity, $ppp = 35)
     {
         if ($this->size == 'T') {
-            return $this->getCartonCount($quantity) /$ppp;
+            return $this->getCartonCount($quantity) / $ppp;
         } else {
-            return ($this->getCartonCount($quantity)/$ppp) / 2;
+            return ($this->getCartonCount($quantity) / $ppp) / 2;
         }
     }
 

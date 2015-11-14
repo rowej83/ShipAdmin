@@ -9,19 +9,21 @@
 class   AqbController extends \BaseController
 {
 
-    public function parseGetPDF(){
+    public function parseGetPDF()
+    {
         return View::make('parsepdf-input');
 
     }
 
-    public function parsePostPDF(){
+    public function parsePostPDF()
+    {
 
         $validator = Validator::make(Input::all(),
             array(
                 'packinglist' => 'required'
             )
         );
-        if(!$validator->fails()) {
+        if (!$validator->fails()) {
 
             //validation passes
             $file = Input::file('packinglist');
@@ -40,16 +42,16 @@ class   AqbController extends \BaseController
             }
             $totalOfPos = count($arrayOfPos);
             $queryString = $this->joinKohlsParsePO($arrayOfPos);
-        //    $data['POs'] = $arrayOfPos;
-            $returnPOString='';
-            foreach($arrayOfPos as $returnPO){
-                $returnPOString.=$returnPO.'<br>';
+            //    $data['POs'] = $arrayOfPos;
+            $returnPOString = '';
+            foreach ($arrayOfPos as $returnPO) {
+                $returnPOString .= $returnPO . '<br>';
             }
-            $data['POs']=$returnPOString;
+            $data['POs'] = $returnPOString;
             $data['totalOfPOs'] = $totalOfPos;
             $data['queryString'] = $queryString;
-            return View::make('parsepdf-output',$data);
-        }else{
+            return View::make('parsepdf-output', $data);
+        } else {
 //validation fails
             return View::make('parsepdf-input')->with(array('response' => '<p style="color:red;">Please select a packing list pdf to parse.</p>'));
 
@@ -66,9 +68,8 @@ class   AqbController extends \BaseController
         $totalitems = count($ordersArray);
         foreach ($ordersArray as $item) {
             if ($i == 1 && $totalitems == 1) {
-                return     $stringresponse .= "('" . $item . "')";
-            }
-            elseif ($i == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
                 $stringresponse .= "('" . $item . "',";
             } elseif ($i == $totalitems) {
                 $stringresponse .= "'" . $item . "')";
@@ -102,7 +103,7 @@ class   AqbController extends \BaseController
             $tempitems = $this->prepareArray();
             Session::flash('items', trim(Input::get('items')));
 
-          //  $totalitems = count($tempitems);
+            //  $totalitems = count($tempitems);
             $i = 1;
             $stringresponse = '';
             $optionResult = Input::get('optionsRadios');
@@ -117,7 +118,7 @@ class   AqbController extends \BaseController
                     break;
                 case 'commas':
 
-                    $stringresponse = $this->joinCommas($tempitems,Input::get('addShipments'));
+                    $stringresponse = $this->joinCommas($tempitems, Input::get('addShipments'));
                     break;
 
 
@@ -145,10 +146,10 @@ class   AqbController extends \BaseController
 //                    $i++;
 //                }
 //            }
-            $data['response']=$stringresponse;
-            $data['itemCount']=count($tempitems);
+            $data['response'] = $stringresponse;
+            $data['itemCount'] = count($tempitems);
 //            return View::make('join-output')->with(array('response' => $stringresponse));
-            return View::make('join-output',$data);
+            return View::make('join-output', $data);
 
         }
 
@@ -163,16 +164,15 @@ class   AqbController extends \BaseController
         foreach ($shipmentArray as $item) {
 
 
-
-                if ($i == 1 && $totalitems == 1) {
-                    return $stringresponse .= "('" . $this->addSHP($item,$addSHPTest) . "')";
-                } elseif ($i == 1) {
-                    $stringresponse .= "('" . $this->addSHP($item,$addSHPTest) . "',";
-                } elseif ($i == $totalitems) {
-                    $stringresponse .= "'" . $this->addSHP($item,$addSHPTest) . "')";
-                } else {
-                    $stringresponse .= "'" . $this->addSHP($item,$addSHPTest) . "',";
-                }
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $this->addSHP($item, $addSHPTest) . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $this->addSHP($item, $addSHPTest) . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $this->addSHP($item, $addSHPTest) . "')";
+            } else {
+                $stringresponse .= "'" . $this->addSHP($item, $addSHPTest) . "',";
+            }
 
             $i++;
         }
@@ -188,9 +188,8 @@ class   AqbController extends \BaseController
         $totalitems = count($ordersArray);
         foreach ($ordersArray as $item) {
             if ($i == 1 && $totalitems == 1) {
-           return     $stringresponse .= "('" . $item . "')";
-            }
-            elseif ($i == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
                 $stringresponse .= "('" . $item . "',";
             } elseif ($i == $totalitems) {
                 $stringresponse .= "'" . $item . "')";
@@ -203,7 +202,7 @@ class   AqbController extends \BaseController
 
     }
 
-    private function joinCommas($itemArray,$addSHPTest)
+    private function joinCommas($itemArray, $addSHPTest)
     {
         $stringresponse = '';
 
@@ -211,30 +210,32 @@ class   AqbController extends \BaseController
         $totalitems = count($itemArray);
         foreach ($itemArray as $item) {
             if ($i == 1 && $totalitems == 1) {
-                return $stringresponse .= $this->addSHP($item,$addSHPTest);
+                return $stringresponse .= $this->addSHP($item, $addSHPTest);
 
-            }
-            elseif ($i == 1) {
-                $stringresponse .= $this->addSHP($item,$addSHPTest).',';
+            } elseif ($i == 1) {
+                $stringresponse .= $this->addSHP($item, $addSHPTest) . ',';
             } elseif ($i == $totalitems) {
-                $stringresponse .= $this->addSHP($item,$addSHPTest);
+                $stringresponse .= $this->addSHP($item, $addSHPTest);
             } else {
-                $stringresponse .= $this->addSHP($item,$addSHPTest) . ",";
+                $stringresponse .= $this->addSHP($item, $addSHPTest) . ",";
             }
             $i++;
         }
         return $stringresponse;
 
     }
- function addSHP($value, $test){
 
-   if($test==true){
-    return 'SHP'.$value;}
-    else{
-        return $value;
+    function addSHP($value, $test)
+    {
+
+        if ($test == true) {
+            return 'SHP' . $value;
+        } else {
+            return $value;
+        }
     }
-}
-    private function simpleJoin($itemArray,$addSHPTest)
+
+    private function simpleJoin($itemArray, $addSHPTest)
     {
 
         $stringresponse = '';
@@ -243,14 +244,13 @@ class   AqbController extends \BaseController
         $totalitems = count($itemArray);
         foreach ($itemArray as $item) {
             if ($i == 1 && $totalitems == 1) {
-                return      $stringresponse .= "('" . $this->addSHP($item,$addSHPTest) . "')";
-            }
-            elseif ($i == 1) {
-                $stringresponse .= "('" . $this->addSHP($item,$addSHPTest) . "',";
+                return $stringresponse .= "('" . $this->addSHP($item, $addSHPTest) . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $this->addSHP($item, $addSHPTest) . "',";
             } elseif ($i == $totalitems) {
-                $stringresponse .= "'" . $this->addSHP($item,$addSHPTest) . "')";
+                $stringresponse .= "'" . $this->addSHP($item, $addSHPTest) . "')";
             } else {
-                $stringresponse .= "'" . $this->addSHP($item,$addSHPTest) . "',";
+                $stringresponse .= "'" . $this->addSHP($item, $addSHPTest) . "',";
             }
             $i++;
         }
