@@ -26,3 +26,5 @@ Route::get('/retrieveKohlsPDF',
 Route::post('/retrieveKohlsPDF',
     ['as' => 'retrievePostKohlsPDF', 'uses' => 'KohlsController@retrievePostPDF']);
 
+Route::get('deleteKohlsDB', ['as' => 'deleteKohlsDBForm', 'uses' => 'KohlsController@deleteDBForm']);
+Route::post('deleteKohlsDB', ['as' => 'deleteKohlsDBSubmission', 'uses' => 'KohlsController@deleteDBSubmission']);

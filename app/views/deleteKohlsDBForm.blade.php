@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Shipment Size Estimator</title>
+    <title>Rest Kohls DB</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
     <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
     <script src="<?php echo URL::asset('js/scripts.js'); ?>"></script>
     <script src="<?php echo URL::asset('js/jquery.magnific-popup.min.js'); ?>"></script>
-
 </head>
 <body>
 
@@ -16,12 +15,13 @@
 
 
     @include('main-menu-partial')
+    @include('sub-menu-kohls')
 
 
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1"><b style="color:red" id="reloadText"></b></div>
         <div class="pure-u-1">
-            <h1>Shipment Estimator
+            <h1>Reset Kohls DB
                 <small style="font-size: .4em;color:grey;">v1.0</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
@@ -30,8 +30,17 @@
             spreadsheet loads with bad entries.
         </div>
     </div>
+    @if(isset($response))
+        <div class="pure-g" style="margin-bottom:15px;">
+            <div class="pure-u-1">
 
-    <form class="pure-form" action="<?php echo route('deleteDBSubmission'); ?>" method="post">
+                {{$response}}
+
+            </div>
+        </div>
+    @endif
+
+    <form class="pure-form" action="<?php echo route('deleteKohlsDBSubmission'); ?>" method="post">
         <div class="pure-g " style="margin-top:30px;">
             <div class="pure-u-1-3">
 
@@ -39,6 +48,16 @@
                     DB.</label>
                 <input type="text" name="delete" id="deleteText">
 
+
+            </div>
+
+            <div class="pure-u-2-3"></div>
+        </div>
+        <div class="pure-g " style="margin-top:30px;">
+            <div class="pure-u-1-3">
+
+
+                <input type="checkbox" name="deleteLocal" value="deleteLcal" > Delete local .pdf files
 
             </div>
 

@@ -5,7 +5,9 @@
     <title>Advanced Query Builder</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
+    <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
     <script src="<?php echo URL::asset('js/scripts.js'); ?>"></script>
+    <script src="<?php echo URL::asset('js/jquery.magnific-popup.min.js'); ?>"></script>
 </head>
 <body>
 
