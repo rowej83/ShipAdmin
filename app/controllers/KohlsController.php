@@ -20,7 +20,9 @@ class KohlsController extends \BaseController
 
         //  $end_directory = $end_directory ? $end_directory : './';
         //   $new_path = preg_replace('/[\/]+/', '/', $end_directory.'/'.substr($filename, 0, strrpos($filename, '/')));
-        $new_path = storage_path() . '/pos/' . $individualFileName . '/';
+        $new_path = storage_path() . '/Kohlspos';
+
+
         if (!is_dir($new_path)) {
             // Will make directories under end directory that don't exist
             // Provided that end directory exists and has the right permissions
@@ -43,14 +45,16 @@ class KohlsController extends \BaseController
                 $new_pdf->useTemplate($new_pdf->importPage($i));
 
                 try {
-                    //     $end_directory='';
-                    //                $new_filename = $end_directory.str_replace('.pdf', '', $filePath).'_'.$i.".pdf";
+                    //        $end_directory='';
+//                                    $new_filename = str_replace('.pdf', '', $filePath).'_'.$i.".pdf";
+                    $new_filename = storage_path() . '/Kohlspos/' . $arrayOfPos[$i - 1] . '.pdf';
+                    //  $new_filename = storage_path() . "/pos/" .trim($arrayOfPos[$i - 1]).'.pdf';
 
-                    $new_filename = storage_path() . "/pos/" . $individualFileName . '/' . $individualFileName . '-' . $i . '.pdf';
+                    //      dd($new_filename);
                     $newPackingList->pathToFile = $new_filename;
                     $new_pdf->Output($new_filename, "F");
                     $newPackingList->save();
-                    echo "Page " . $i . " split into " . $new_filename . "<br />\n";
+                    // echo "Page " . $i . " split into " . $new_filename . "<br />\n";
                 } catch (Exception $e) {
                     echo 'Caught exception: ', $e->getMessage(), "\n";
                 }
@@ -58,9 +62,93 @@ class KohlsController extends \BaseController
         }
     }
 
+    function split_multi_pdf($arrayOfFiles)
+    {
+//        require_once('fpdf/fpdf.php');
+//        require_once('fpdi/fpdi.php');
+
+        //  $end_directory = $end_directory ? $end_directory : './';
+        //   $new_path = preg_replace('/[\/]+/', '/', $end_directory.'/'.substr($filename, 0, strrpos($filename, '/')));
+
+        //  dd(count($arrayOfFiles));
+        $new_path = storage_path() . '/Kohlspos';
+
+
+        if (!is_dir($new_path)) {
+            // Will make directories under end directory that don't exist
+            // Provided that end directory exists and has the right permissions
+            mkdir($new_path, 0777, true);
+        }
+        foreach ($arrayOfFiles as $file) {
+            $tempArrayOfPos=array();
+$tempArrayOfPos=$this->getArrayOfPOs($file);
+            $pdf = new FPDI();
+            $pagecount = $pdf->setSourceFile($file); // How many pages?
+            for ($i = 1; $i <= $pagecount; $i++) {
+                $tempPackingList = PackingList::where('po', '=', $tempArrayOfPos[$i - 1])->first();
+
+                if ($tempPackingList == null) {
+                    $new_pdf = new FPDI();
+                    $new_pdf->AddPage();
+                    $new_pdf->setSourceFile($file);
+                    $newPackingList = new PackingList();
+                    $newPackingList->po = trim($tempArrayOfPos[$i - 1]);
+                    $new_pdf->useTemplate($new_pdf->importPage($i));
+
+                    try {
+                        //        $end_directory='';
+//                                    $new_filename = str_replace('.pdf', '', $filePath).'_'.$i.".pdf";
+                        $new_filename = storage_path() . '/Kohlspos/' . $tempArrayOfPos[$i - 1] . '.pdf';
+                        //  $new_filename = storage_path() . "/pos/" .trim($arrayOfPos[$i - 1]).'.pdf';
+
+                        //      dd($new_filename);
+                        $newPackingList->pathToFile = $new_filename;
+                        $new_pdf->Output($new_filename, "F");
+                        $newPackingList->save();
+                        // echo "Page " . $i . " split into " . $new_filename . "<br />\n";
+                    } catch (Exception $e) {
+                        echo 'Caught exception: ', $e->getMessage(), "\n";
+                    }
+                }
+            }
+
+        }
+
+//        $pdf = new FPDI();
+//        $pagecount = $pdf->setSourceFile($filePath); // How many pages?
+////dd($pagecount);
+        // Split each page into a new PDF
+    }
+
+
     public function index()
     {
 
+
+    }
+
+    function getArrayOfPOs($file)
+    {
+        $returnArray = array();
+
+        $parser = new \Smalot\PdfParser\Parser();
+
+        $pdf = $parser->parseFile($file);
+        $pages = $pdf->getPages();
+      //  $tempArrayOfPos=array();
+        foreach ($pages as $page) {
+            $text = nl2br($page->getText());
+
+            $tempPDF = explode('<br />', $text);
+
+
+            $getPO = explode(':', $tempPDF[10]);
+            $PO = trim($getPO[1]);
+            array_push($returnArray, $PO);
+
+        }
+
+        return $returnArray;
 
     }
 
@@ -83,34 +171,38 @@ class KohlsController extends \BaseController
         if (!$validator->fails()) {
 
             //validation passes
-            $file = Input::file('packinglist');
-            $name = Input::file('packinglist')->getClientOriginalName();
-            $file_name = pathinfo($name, PATHINFO_FILENAME); // file
-            $parser = new \Smalot\PdfParser\Parser();
+            $files = Input::file('packinglist');
+            $this->split_multi_pdf($files);
+//            $file = Input::file('packinglist');
+//            $name = Input::file('packinglist')->getClientOriginalName();
+//            $file_name = pathinfo($name, PATHINFO_FILENAME); // file
+//            $parser = new \Smalot\PdfParser\Parser();
+//
+//            $pdf = $parser->parseFile($file);
+//            $pages = $pdf->getPages();
+//            $arrayOfPos = array();
+//
+//
+//            foreach ($pages as $page) {
+//                $text = nl2br($page->getText());
+//
+//                $tempPDF = explode('<br />', $text);
+//
+//
+//                $getPO = explode(':', $tempPDF[10]);
+//                $PO = trim($getPO[1]);
+//                array_push($arrayOfPos, $PO);
+//
+//            }
 
-            $pdf = $parser->parseFile($file);
-            $pages = $pdf->getPages();
-            $arrayOfPos = array();
-
-
-            foreach ($pages as $page) {
-                $text = nl2br($page->getText());
-
-                $tempPDF = explode('<br />', $text);
-
-
-                $getPO = explode(':', $tempPDF[10]);
-                $PO = trim($getPO[1]);
-                array_push($arrayOfPos, $PO);
-
-            }
-
-            $pdf = new FPDI();
-            $pagecount = $pdf->setSourceFile($file);
+            //    $pdf = new FPDI();
+            //   $pagecount = $pdf->setSourceFile($file);
 //          print_r($pagecount);
 //            print_r($arrayOfPos);
             // dd(storage_path());
-            $this->split_pdf($file, $name, $file_name, $arrayOfPos, public_path());
+
+
+            //  $this->split_pdf($file, $name, $file_name, $arrayOfPos, public_path());
             // How many pages?
             //  $totalOfPos = count($arrayOfPos);
             //  $queryString = $this->joinKohlsParsePO($arrayOfPos);
@@ -180,6 +272,7 @@ class KohlsController extends \BaseController
 
 
                 $pdf->merge('download', 'output.pdf');
+                //return Redirect::route('parseGetKohlsPDF');
 
 // REPLACE 'file' WITH 'browser', 'download', 'string', or 'file' for output options
 
@@ -193,5 +286,45 @@ class KohlsController extends \BaseController
         }
     }
 
+
+    function deleteDBForm()
+    {
+        return View::make('deleteKohlsDBForm');
+
+    }
+
+    function deleteDBSubmission()
+    {
+        $result = Input::get('delete');
+        if ($result != 'Y-E-S') {
+            $data['response'] = '<span style="color:red">DB reset has failed. Y-E-S was not entered.</span>';
+            return View::make('deleteKohlsDBForm', $data);
+        } else {
+
+            PackingList::truncate();
+            if (Input::get('deleteLocal') != null) {
+                $this->rrmdir(storage_path() . '/Kohlspos');
+            }
+            $data['response'] = '<span style="color:red">All items in the Kohls DB have been cleared.</span>';
+            return View::make('deleteKohlsDBForm', $data);
+        }
+
+    }
+
+    function rrmdir($dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir . "/" . $object) == "dir")
+                        $this->rrmdir($dir . "/" . $object);
+                    else unlink($dir . "/" . $object);
+                }
+            }
+            reset($objects);
+           // rmdir($dir);
+        }
+    }
 
 }

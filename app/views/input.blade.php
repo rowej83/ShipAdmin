@@ -5,7 +5,9 @@
     <title>Shipment Size Estimator</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
+    <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
     <script src="<?php echo URL::asset('js/scripts.js'); ?>"></script>
+    <script src="<?php echo URL::asset('js/jquery.magnific-popup.min.js'); ?>"></script>
 
 </head>
 <body>
@@ -65,7 +67,8 @@
                         $('textarea').val('');
                         }</script>--}}
         <div class="pure-g" style="margin-top:50px;">
-            <div class="pure-1"><input type="submit" value="submit shipment" class="pure-button-primary pure-button"
+            <div class="pure-1"><input id="submitButton" type="submit" value="submit shipment"
+                                       class="pure-button-primary pure-button"
                                        style="" class="pure-button"/><input type="button" value="reset" onclick="reset"
                                                                             id="reset" style="margin-left:10px;"
                                                                             class="pure-button reset"/></div>
@@ -91,13 +94,37 @@
             });
 
             $("#reload").click(function (e) {
-                $('#reloadText').text('Loading items from the spreadsheet to the Database. Do not click again. Please wait..');
-                $(this).hide();
+//                $('#reloadText').text('Loading items from the spreadsheet to the Database. Do not click again. Please wait..');
+//                $(this).hide();
+                $.magnificPopup.open({
+                    items: {
+                        src: '#loader'
+                    },
+                    type: 'inline',
+                    closeOnBgClick:false,
+                    enableEscapeKey:false                });
             });
-
-
+//            $("#submitButton").click(function (e) {
+//
+//                $.magnificPopup.open({
+//                    items: {
+//                        src: '#loader'
+//                    },
+//                    type: 'inline',
+//                    closeOnBgClick: false
+//                });
+//
+//            });
         });
     </script>
+</div>
+<div id="loader" class="mfp-hide" style="background-color:inherit;color:white;width:300px;margin:0 auto; padding:20px;"><p
+            style="text-align: center;margin:0 auto;width: 300px;">Loading. Please wait</p>
+
+    <div id="" class="spinner " style="color:white;">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+    </div>
 </div>
 </body>
 </html>

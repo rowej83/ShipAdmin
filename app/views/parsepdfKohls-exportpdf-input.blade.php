@@ -5,12 +5,15 @@
     <title>Retrieve packinglists from Kohls.com POs</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
+    <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
     <script src="<?php echo URL::asset('js/scripts.js'); ?>"></script>
+    <script src="<?php echo URL::asset('js/jquery.magnific-popup.min.js'); ?>"></script>
 </head>
 <body>
 
 <div style="width:800px;margin:0 auto;">
     @include('main-menu-partial')
+    @include('sub-menu-kohls')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
             <h1>Retrieve PDF from Kohls POs
@@ -40,7 +43,7 @@
                 $('textarea').val('');
             }</script>--}}
         <div class="pure-g" style="margin-top:50px;">
-            <div class="pure-1"><input type="submit" value="Get Packinglist from POs"
+            <div class="pure-1"><input type="submit" id="submitButton" value="Get Packinglist from POs"
                                        class="pure-button-primary pure-button" style="" class="pure-button"/><input
                         type="reset" value="Reset" class="pure-button" style="" class="pure-button"/></div>
         </div>
@@ -65,6 +68,16 @@
 
             });
 
+//            $("#submitButton").click(function (e) {
+//
+//                $.magnificPopup.open({
+//                    items: {
+//                        src: '#loader'
+//                    },
+//                    type: 'inline',
+//                    closeOnBgClick:false
+//                });
+
 //            $("input:radio").click(function(e){
 //            if($(this).attr("id")=="option-two"){
 //                   $('#addShipments').show();
@@ -75,8 +88,18 @@
 //            });
 
 
-        });
+        });});
+
+
     </script>
+</div>
+<div id="loader" class="mfp-hide" style="background-color:inherit;color:white;width:300px;margin:0 auto; padding:20px;"><p
+            style="text-align: center;margin:0 auto;width: 300px;">Loading. Please wait</p>
+
+    <div id="" class="spinner" style="color:white;">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
+    </div>
 </div>
 </body>
 </html>
