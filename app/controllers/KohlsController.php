@@ -261,7 +261,12 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
 
             }
             if (count($notFoundPOs) > 0) {
-                return View::make('parsepdfKohls-exportpdf-output')->with(array('response' => '<p style="color:red;">POs are missing</p>'));
+               $notFoundPOsReturnString='';
+                foreach($notFoundPOs as $notFoundPO){
+                    $notFoundPOsReturnString.=$notFoundPO.'<br>';
+                }
+                return View::make('parsepdfKohls-exportpdf-output')->with(array('response' => '<p style="color:red;">The below POs are missing:</p><br>'.$notFoundPOsReturnString));
+
 
             } else {
                 //return a download file..we have all Packing lists
