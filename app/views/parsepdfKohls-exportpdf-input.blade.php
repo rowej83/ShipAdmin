@@ -68,15 +68,15 @@
 
             });
 
-//            $("#submitButton").click(function (e) {
-//
-//                $.magnificPopup.open({
-//                    items: {
-//                        src: '#loader'
-//                    },
-//                    type: 'inline',
-//                    closeOnBgClick:false
-//                });
+            $("#submitButton").click(function (e) {
+
+                $.magnificPopup.open({
+                    items: {
+                        src: '#loader'
+                    },
+                    type: 'inline',
+                    closeOnBgClick:false
+                });
 
 //            $("input:radio").click(function(e){
 //            if($(this).attr("id")=="option-two"){
@@ -88,7 +88,7 @@
 //            });
 
 
-        });});
+        })});
 
 
     </script>

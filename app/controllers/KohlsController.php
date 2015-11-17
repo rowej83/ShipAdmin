@@ -85,20 +85,23 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
             $pdf = new FPDI();
             $pagecount = $pdf->setSourceFile($file); // How many pages?
             for ($i = 1; $i <= $pagecount; $i++) {
-                $tempPackingList = PackingList::where('po', '=', $tempArrayOfPos[$i - 1])->first();
+                $singleItem=$tempArrayOfPos[$i-1];
+             //   dd($singleItem);
+                $tempPackingList = PackingList::where('po', '=', $singleItem['PO'])->first();
 
                 if ($tempPackingList == null) {
                     $new_pdf = new FPDI();
                     $new_pdf->AddPage();
                     $new_pdf->setSourceFile($file);
                     $newPackingList = new PackingList();
-                    $newPackingList->po = trim($tempArrayOfPos[$i - 1]);
+                    $newPackingList->po = trim($singleItem['PO']);
+                    $newPackingList->shipterms=trim($singleItem['shipterms']);
                     $new_pdf->useTemplate($new_pdf->importPage($i));
 
                     try {
                         //        $end_directory='';
 //                                    $new_filename = str_replace('.pdf', '', $filePath).'_'.$i.".pdf";
-                        $new_filename = storage_path() . '/Kohlspos/' . $tempArrayOfPos[$i - 1] . '.pdf';
+                        $new_filename = storage_path() . '/Kohlspos/' .$singleItem['PO'] . '.pdf';
                         //  $new_filename = storage_path() . "/pos/" .trim($arrayOfPos[$i - 1]).'.pdf';
 
                         //      dd($new_filename);
@@ -140,16 +143,27 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
             $text = nl2br($page->getText());
 
             $tempPDF = explode('<br />', $text);
-
+//dd($tempPDF);
 
             $getPO = explode(':', $tempPDF[10]);
-            $PO = trim($getPO[1]);
-            array_push($returnArray, $PO);
+            $data['PO']=trim($getPO[1]);
+            $isGround=$this->checkIfGround($text);
+          if($isGround){
+              $data['shipterms']="Ground";
+          }else{
+              $data['shipterms']="Not Ground";
+          }
+        //    $PO = trim($getPO[1]);
+            array_push($returnArray, $data);
 
         }
-
+//dd($returnArray);
         return $returnArray;
 
+    }
+    function checkIfGround($haystack)
+    {
+        return strpos($haystack, 'Continental US - Standard Ground') !== false;
     }
 
     public function parseGetPDF()
@@ -243,6 +257,7 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
         if (!$validator->fails()) {
             include(app_path() . '/includes/PDFMerger.php');
             $notFoundPOs = array();
+            $nonGroundPOs=array();
             $packingListPOsArray = array();
             $packingListPathArray = array();
             $packingListPOs = trim(Input::get('packinglist'));
@@ -256,6 +271,11 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
                     array_push($notFoundPOs, $packingListPO);
                 } else {
                     array_push($packingListPathArray, $tempPackingList->pathToFile);
+                   // dd($tempPackingList->shipterms=='Ground');
+                   if($tempPackingList->shipterms!='Ground'){
+                       array_push($nonGroundPOs,$packingListPO);
+                   }
+
 
                 }
 
@@ -274,15 +294,20 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
                 foreach ($packingListPathArray as $packingListPath) {
                     $pdf->addPDF($packingListPath);
                 }
+$tempoutputpath='output'.'-'.time().'.pdf';
+$outputpath=public_path().'/Kohlspos/'.$tempoutputpath;
+                $pdf->merge('file', $outputpath);
+$outputpath='Kohlspos/'.$tempoutputpath;
+                $data['nonGroundPos']=$nonGroundPOs;
+               // dd($nonGroundPOs);
+                $data['outputpath']=$outputpath;
+return View::make('parsepdfKohls-exportpdf-output',$data);
 
 
-                $pdf->merge('download', 'output.pdf');
-                //return Redirect::route('parseGetKohlsPDF');
 
 // REPLACE 'file' WITH 'browser', 'download', 'string', or 'file' for output options
 
             }
-            //Stores the inputted cmmfs and quantities in Session variables incase user wants to use Back button to redo query
 
         } else {
 
@@ -309,6 +334,7 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
             PackingList::truncate();
             if (Input::get('deleteLocal') != null) {
                 $this->rrmdir(storage_path() . '/Kohlspos');
+                $this->rrmdir(public_path() . '/Kohlspos');
             }
             $data['response'] = '<span style="color:red">All items in the Kohls DB have been cleared.</span>';
             return View::make('deleteKohlsDBForm', $data);
