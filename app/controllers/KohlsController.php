@@ -13,13 +13,77 @@ class KohlsController extends \BaseController
 
     }
 
+    private function prepareArray($inputitems)
+    {
+        $tempItems = trim($inputitems);
+        $items = explode(PHP_EOL, $tempItems);
+
+        $finalArray = array();
+        foreach ($items as $item) {
+            if (trim($item) != '') {
+                array_push($finalArray, trim($item));
+            }
+
+        }
+        return $finalArray;
+
+
+    }
+
+    public function Getcheckforground()
+    {
+        return View::make('kohls-check-if-ground-input');
+    }
+
+    public function Postcheckforground()
+    {
+        $validator = Validator::make(Input::all(),
+            array(
+                'pos' => 'required'
+            )
+        );
+
+
+        if (!$validator->fails()) {
+            $nonGroundPOS = array();
+            $notInDBPOS = array();
+
+            $inputArray = $this->prepareArray(Input::get('pos'));
+            foreach ($inputArray as $tempItem) {
+                $tempPO = PackingList::where('po', '=', $tempItem)->first();
+                if ($tempPO == null) {
+                    array_push($notInDBPOS, $tempItem);
+                    //not in db
+                } else {
+                    if ($tempPO->shipterms != 'Ground') {
+                        array_push($nonGroundPOS, $tempItem);
+                    }
+
+                }
+
+            }
+            $queryPOString = $this->joinKohlsParsePO($nonGroundPOS);
+            $data['nonGroundPos'] = $nonGroundPOS;
+            $data['notInDBPos'] = $notInDBPOS;
+            $data['queryPOString'] = $queryPOString;
+//dd(empty($nonGroundPOS));
+            //  dd($nonGroundPOS);
+            if ((empty($nonGroundPOS) && empty($notInDBPOS))) {
+                $data['response'] = 'All of the provided POs are in the DB and are going Ground.';
+            }
+            return View::make('kohls-check-if-ground-output', $data);
+
+
+        } else {
+
+            return View::make('kohls-check-if-ground-output')->with(array('response' => '<p style="color:red;">Please provide a list of POs</p>'));
+
+        }
+
+    }
+
     function split_pdf($filePath, $fileName, $individualFileName, $arrayOfPos, $end_directory = false)
     {
-//        require_once('fpdf/fpdf.php');
-//        require_once('fpdi/fpdi.php');
-
-        //  $end_directory = $end_directory ? $end_directory : './';
-        //   $new_path = preg_replace('/[\/]+/', '/', $end_directory.'/'.substr($filename, 0, strrpos($filename, '/')));
         $new_path = storage_path() . '/Kohlspos';
 
 
@@ -45,16 +109,12 @@ class KohlsController extends \BaseController
                 $new_pdf->useTemplate($new_pdf->importPage($i));
 
                 try {
-                    //        $end_directory='';
-//                                    $new_filename = str_replace('.pdf', '', $filePath).'_'.$i.".pdf";
                     $new_filename = storage_path() . '/Kohlspos/' . $arrayOfPos[$i - 1] . '.pdf';
-                    //  $new_filename = storage_path() . "/pos/" .trim($arrayOfPos[$i - 1]).'.pdf';
 
-                    //      dd($new_filename);
                     $newPackingList->pathToFile = $new_filename;
                     $new_pdf->Output($new_filename, "F");
                     $newPackingList->save();
-                    // echo "Page " . $i . " split into " . $new_filename . "<br />\n";
+
                 } catch (Exception $e) {
                     echo 'Caught exception: ', $e->getMessage(), "\n";
                 }
@@ -64,13 +124,7 @@ class KohlsController extends \BaseController
 
     function split_multi_pdf($arrayOfFiles)
     {
-//        require_once('fpdf/fpdf.php');
-//        require_once('fpdi/fpdi.php');
 
-        //  $end_directory = $end_directory ? $end_directory : './';
-        //   $new_path = preg_replace('/[\/]+/', '/', $end_directory.'/'.substr($filename, 0, strrpos($filename, '/')));
-
-        //  dd(count($arrayOfFiles));
         $new_path = storage_path() . '/Kohlspos';
 
 
@@ -80,13 +134,13 @@ class KohlsController extends \BaseController
             mkdir($new_path, 0777, true);
         }
         foreach ($arrayOfFiles as $file) {
-            $tempArrayOfPos=array();
-$tempArrayOfPos=$this->getArrayOfPOs($file);
+            $tempArrayOfPos = array();
+            $tempArrayOfPos = $this->getArrayOfPOs($file);
             $pdf = new FPDI();
             $pagecount = $pdf->setSourceFile($file); // How many pages?
             for ($i = 1; $i <= $pagecount; $i++) {
-                $singleItem=$tempArrayOfPos[$i-1];
-             //   dd($singleItem);
+                $singleItem = $tempArrayOfPos[$i - 1];
+                //   dd($singleItem);
                 $tempPackingList = PackingList::where('po', '=', $singleItem['PO'])->first();
 
                 if ($tempPackingList == null) {
@@ -95,20 +149,15 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
                     $new_pdf->setSourceFile($file);
                     $newPackingList = new PackingList();
                     $newPackingList->po = trim($singleItem['PO']);
-                    $newPackingList->shipterms=trim($singleItem['shipterms']);
+                    $newPackingList->shipterms = trim($singleItem['shipterms']);
                     $new_pdf->useTemplate($new_pdf->importPage($i));
 
                     try {
-                        //        $end_directory='';
-//                                    $new_filename = str_replace('.pdf', '', $filePath).'_'.$i.".pdf";
-                        $new_filename = storage_path() . '/Kohlspos/' .$singleItem['PO'] . '.pdf';
-                        //  $new_filename = storage_path() . "/pos/" .trim($arrayOfPos[$i - 1]).'.pdf';
-
-                        //      dd($new_filename);
+                        $new_filename = storage_path() . '/Kohlspos/' . $singleItem['PO'] . '.pdf';
                         $newPackingList->pathToFile = $new_filename;
                         $new_pdf->Output($new_filename, "F");
                         $newPackingList->save();
-                        // echo "Page " . $i . " split into " . $new_filename . "<br />\n";
+
                     } catch (Exception $e) {
                         echo 'Caught exception: ', $e->getMessage(), "\n";
                     }
@@ -117,10 +166,7 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
 
         }
 
-//        $pdf = new FPDI();
-//        $pagecount = $pdf->setSourceFile($filePath); // How many pages?
-////dd($pagecount);
-        // Split each page into a new PDF
+
     }
 
 
@@ -138,22 +184,22 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
 
         $pdf = $parser->parseFile($file);
         $pages = $pdf->getPages();
-      //  $tempArrayOfPos=array();
+
         foreach ($pages as $page) {
             $text = nl2br($page->getText());
 
             $tempPDF = explode('<br />', $text);
-//dd($tempPDF);
+
 
             $getPO = explode(':', $tempPDF[10]);
-            $data['PO']=trim($getPO[1]);
-            $isGround=$this->checkIfGround($text);
-          if($isGround){
-              $data['shipterms']="Ground";
-          }else{
-              $data['shipterms']="Not Ground";
-          }
-        //    $PO = trim($getPO[1]);
+            $data['PO'] = trim($getPO[1]);
+            $isGround = $this->checkIfGround($text);
+            if ($isGround) {
+                $data['shipterms'] = "Ground";
+            } else {
+                $data['shipterms'] = "Not Ground";
+            }
+            //    $PO = trim($getPO[1]);
             array_push($returnArray, $data);
 
         }
@@ -161,9 +207,20 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
         return $returnArray;
 
     }
+
     function checkIfGround($haystack)
     {
-        return strpos($haystack, 'Continental US - Standard Ground') !== false;
+
+        if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
+            return true;
+        } elseif (strpos($haystack, 'UPS Ground') !== false) {
+            return true;
+        } else {
+            return false;
+        }
+//         $result= strpos($haystack, 'Continental US - Standard Ground') !== false || strpos($haystack, 'UPS Ground') !== false;
+
+// return $result;
     }
 
     public function parseGetPDF()
@@ -257,7 +314,7 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
         if (!$validator->fails()) {
             include(app_path() . '/includes/PDFMerger.php');
             $notFoundPOs = array();
-            $nonGroundPOs=array();
+            $nonGroundPOs = array();
             $packingListPOsArray = array();
             $packingListPathArray = array();
             $packingListPOs = trim(Input::get('packinglist'));
@@ -271,21 +328,21 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
                     array_push($notFoundPOs, $packingListPO);
                 } else {
                     array_push($packingListPathArray, $tempPackingList->pathToFile);
-                   // dd($tempPackingList->shipterms=='Ground');
-                   if($tempPackingList->shipterms!='Ground'){
-                       array_push($nonGroundPOs,$packingListPO);
-                   }
+                    // dd($tempPackingList->shipterms=='Ground');
+                    if ($tempPackingList->shipterms != 'Ground') {
+                        array_push($nonGroundPOs, $packingListPO);
+                    }
 
 
                 }
 
             }
             if (count($notFoundPOs) > 0) {
-               $notFoundPOsReturnString='';
-                foreach($notFoundPOs as $notFoundPO){
-                    $notFoundPOsReturnString.=$notFoundPO.'<br>';
+                $notFoundPOsReturnString = '';
+                foreach ($notFoundPOs as $notFoundPO) {
+                    $notFoundPOsReturnString .= $notFoundPO . '<br>';
                 }
-                return View::make('parsepdfKohls-exportpdf-output')->with(array('response' => '<p style="color:red;">The below POs are missing:</p><br>'.$notFoundPOsReturnString));
+                return View::make('parsepdfKohls-exportpdf-output')->with(array('response' => '<p style="color:red;">The below POs are missing:</p><br>' . $notFoundPOsReturnString));
 
 
             } else {
@@ -294,15 +351,14 @@ $tempArrayOfPos=$this->getArrayOfPOs($file);
                 foreach ($packingListPathArray as $packingListPath) {
                     $pdf->addPDF($packingListPath);
                 }
-$tempoutputpath='output'.'-'.time().'.pdf';
-$outputpath=public_path().'/Kohlspos/'.$tempoutputpath;
+                $tempoutputpath = 'output' . '-' . time() . '.pdf';
+                $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
                 $pdf->merge('file', $outputpath);
-$outputpath='Kohlspos/'.$tempoutputpath;
-                $data['nonGroundPos']=$nonGroundPOs;
-               // dd($nonGroundPOs);
-                $data['outputpath']=$outputpath;
-return View::make('parsepdfKohls-exportpdf-output',$data);
-
+                $outputpath = 'Kohlspos/' . $tempoutputpath;
+                $data['nonGroundPos'] = $nonGroundPOs;
+                // dd($nonGroundPOs);
+                $data['outputpath'] = $outputpath;
+                return View::make('parsepdfKohls-exportpdf-output', $data);
 
 
 // REPLACE 'file' WITH 'browser', 'download', 'string', or 'file' for output options
@@ -342,6 +398,28 @@ return View::make('parsepdfKohls-exportpdf-output',$data);
 
     }
 
+    private function joinKohlsParsePO($ordersArray)
+    {
+
+        $stringresponse = 'om_f.ship_po in ';
+        $i = 1;
+        $totalitems = count($ordersArray);
+        foreach ($ordersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+
     function rrmdir($dir)
     {
         if (is_dir($dir)) {
@@ -354,7 +432,7 @@ return View::make('parsepdfKohls-exportpdf-output',$data);
                 }
             }
             reset($objects);
-           // rmdir($dir);
+            // rmdir($dir);
         }
     }
 

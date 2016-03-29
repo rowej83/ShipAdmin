@@ -28,3 +28,10 @@ Route::post('/retrieveKohlsPDF',
 
 Route::get('deleteKohlsDB', ['as' => 'deleteKohlsDBForm', 'uses' => 'KohlsController@deleteDBForm']);
 Route::post('deleteKohlsDB', ['as' => 'deleteKohlsDBSubmission', 'uses' => 'KohlsController@deleteDBSubmission']);
+
+Route::get('checkforground',
+    ['as' => 'Getcheckforground', 'uses' => 'KohlsController@Getcheckforground']);
+
+Route::post('checkforground',
+    ['as' => 'Postcheckforground', 'uses' => 'KohlsController@Postcheckforground']);
+
