@@ -120,6 +120,9 @@ class   AqbController extends \BaseController
 
                     $stringresponse = $this->joinCommas($tempitems, Input::get('addShipments'));
                     break;
+                case 'pos':
+                    $stringresponse=$this->joinPurchaseOrders($tempitems);
+                    break;
 
 
                 default:
@@ -127,33 +130,22 @@ class   AqbController extends \BaseController
                     $stringresponse = $this->simpleJoin($tempitems, Input::get('addShipments'));
             }
 
-//            if ($optionResult == 'ordernumbers') {
-//                $stringresponse .= 'om_f.ob_oid in ';
-//            } elseif ($optionResult == 'shipmentnumbers') {
-//                $stringresponse .= 'om_f.shipment in ';
-//            }
-//            if ($totalitems == 1) {
-//                $stringresponse .= "('" . $items[0] . "')";
-//            } else {
-//                foreach ($items as $item) {
-//                    if ($i == 1) {
-//                        $stringresponse .= "('" . $item . "',";
-//                    } elseif ($i == $totalitems) {
-//                        $stringresponse .= "'" . $item . "')";
-//                    } else {
-//                        $stringresponse .= "'" . $item . "',";
-//                    }
-//                    $i++;
-//                }
-//            }
+
             $data['response'] = $stringresponse;
             $data['itemCount'] = count($tempitems);
-//            return View::make('join-output')->with(array('response' => $stringresponse));
+            $data['uniqueItemCount']=count(array_unique($tempitems));
+
             return View::make('join-output', $data);
 
         }
 
     }
+
+    /*
+  * Adds shipment numbers together for AQB and returns string.
+   * Will also add SHP if $addSHPTest is true
+   * e.g.    om_f.shipment in ('251212548','251574987')
+  */
 
     private function joinShipments($shipmentArray, $addSHPTest)
     {
@@ -180,6 +172,11 @@ class   AqbController extends \BaseController
 
     }
 
+    /*
+    * Adds order numbers together for AQB and returns string
+     * e.g.    om_f.ob_oid in ('251212548','251574987')
+    */
+
     private function joinOrders($ordersArray)
     {
 
@@ -202,6 +199,37 @@ class   AqbController extends \BaseController
 
     }
 
+    /*
+   * Adds order numbers together for AQB and returns string
+    * e.g.    om_f.ship_po in ('po1','po2')
+   */
+
+    private function joinPurchaseOrders($ordersArray)
+    {
+
+        $stringresponse = 'om_f.ship_po in ';
+        $i = 1;
+        $totalitems = count($ordersArray);
+        foreach ($ordersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+
+    /*
+     * Creates a string such as item,item2,item3
+     * Can also add SHP if $addSHPTest is true
+     */
     private function joinCommas($itemArray, $addSHPTest)
     {
         $stringresponse = '';
@@ -225,6 +253,9 @@ class   AqbController extends \BaseController
 
     }
 
+    /*
+     * If $test is true it will add SHP to each element
+     */
     function addSHP($value, $test)
     {
 
@@ -235,6 +266,10 @@ class   AqbController extends \BaseController
         }
     }
 
+
+    /*
+     * Adds elements together for AQB use only e.g. ('item1','item2')
+     */
     private function simpleJoin($itemArray, $addSHPTest)
     {
 

@@ -6,8 +6,10 @@
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
     <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
+    <link rel="stylesheet" href="{{ asset('css/tooltipster.css'); }}">
     <script src="<?php echo URL::asset('js/scripts.js'); ?>"></script>
     <script src="<?php echo URL::asset('js/jquery.magnific-popup.min.js'); ?>"></script>
+    <script src="{{asset('js/jquery.tooltipster.min.js');}}"></script>
 </head>
 <body>
 
@@ -16,11 +18,11 @@
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
             <h1>Advanced Query Builder
-                <small style="font-size: .4em;color:grey;"> v1.1</small>
+                <small style="font-size: .4em;color:grey;"> v1.2</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
             Instructions: Paste a list of items that will be joined with ' ' and ,'s to be pasted into an advanced query
-            in Viaware.
+            in Viaware.<br><br> Useful for bringing up specific orders in Viaware via Advanced Query by either the order # ( DO ) , SHP #, or Purchase order.<br><br> Please Note - any blank lines submitted will not be included in your result.
 
         </div>
     </div>
@@ -46,21 +48,25 @@
                     <input id="option-two" type="radio" name="optionsRadios" value="shipmentnumbers">
                     Shipment Numbers
                 </label>
+                <label for="option-five" class="pure-radio">
+                    <input id="option-five" type="radio" name="optionsRadios" value="pos">
+                    Purchase Order Numbers
+                </label>
                 <label for="option-four" class="pure-radio">
                     <input id="option-four" type="radio" name="optionsRadios" value="none">
-                    None ( Join for AQB only )
+                    None ( Join for AQB only ) <img src="{{asset('images/help-button.png')}}" id="joinonly-help" alt="">
                 </label>
                 <label for="option-three" class="pure-radio">
                     <input id="option-three" type="radio" name="optionsRadios" value="commas">
-                    Join with commas and no space
+                    Join with commas and no space <img src="{{asset('images/help-button.png')}}" alt="" id="comma-help" class="">
                 </label>
                 <hr>
                 <b>Options:</b>
                 <span id="addShipments" style="margin-top:20px;display: block;"> <input type="checkbox" style=""
                                                                                         name="addShipments" id=""
-                                                                                        value="addShipments"> Add "SHP" to items<br></span>
+                                                                                        value="addShipments"> Add "SHP" to items <img src="{{asset('images/help-button.png')}}" alt="" id="addshp-help"><br></span>
             </div>
-            <div class="pure-u-1-3">
+            <div class="pure-u-1-3" style="padding-left:20px;">
 
                 <label for="items" style="display: block;margin-bottom:10px;"><b>Items to be joined</b>
                     <small>(Seperated by new line)</small>
@@ -103,14 +109,15 @@
 
             });
 
-//            $("input:radio").click(function(e){
-//            if($(this).attr("id")=="option-two"){
-//                   $('#addShipments').show();
-//                }else{
-//                    $('#addShipments').hide();
-//                }
-//
-//            });
+            $('#joinonly-help').tooltipster({
+                content: $('<div>Useful for creating an IN operator for multiple specific items (cmmfs, brands, store numbers etc..) in advanced query.<br><br></div><div>Given the following input: <br>2100064646<br>2100072125</div><div><br>It will return:</div><div>(\'2100064646\',\'2100072125\')</div><div><br>This can be used in Viaware\'s Advanced Query such as <br><br> od_f.sku in (\'2100064646\',\'2100072125\')  <br><br>This will bring up all orders for those two parts only.</div>')
+            });
+            $('#comma-help').tooltipster({
+                content: $('<div>Useful for including needed shipments when creating Mbols or getting packing lists from Wayfairs site<br><br></div><div>Given the following input: <br>SHP3211111<br>SHP3211112</div><div><br>It will return:</div><div>SHP3211111,SHP3211112</div><div><br>This can be used in Viaware\'s Paperwork screen to generate Mbols. Can also be used to list POs that are needed to be printed from Wayfairs site. </div>')
+            });
+            $('#addshp-help').tooltipster({
+                content: $('<div>When querying by shipment numbers ( SHP ), this option will add the SHP to each item in the list if needed<br><br></div><div>Given the following input: <br>3211111<br>3211112</div><div><br>It will add SHP along with your query such as :</div><div>om_f.shipment in (\'SHP3211111\',\'SHP3211112\')</div><div><br><br>Please note that the Build Query using Shipment Numbers still has to be selected to get this result.</div>')
+            });
 
 
         });

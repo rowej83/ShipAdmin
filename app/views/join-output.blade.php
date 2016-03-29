@@ -22,7 +22,7 @@
             </div>
             <div class="pure-u-1">
                 <h1>Advanced Query Builder
-                    <small style="font-size: .4em;color:grey;"> v1.0</small>
+                    <small style="font-size: .4em;color:grey;"> v1.2</small>
                     {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
                 </h1>
 
@@ -39,9 +39,10 @@
         <div class="pure-u-1">
 
 
-            @if(isset($itemCount))
+            @if(isset($itemCount) && isset($uniqueItemCount))
                 <div class="pure-u-1" style="margin-top:10px;"><p id="count" style="word-wrap: break-word;">Total # of
-                        items: {{$itemCount}}</p></div>
+                        items: {{$itemCount}}</p>
+                <p>Total # of unique items: {{$uniqueItemCount}}</p></div>
             @endif
         </div>
     </div>
