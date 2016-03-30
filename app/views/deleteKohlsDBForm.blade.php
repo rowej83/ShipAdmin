@@ -25,9 +25,7 @@
                 <small style="font-size: .4em;color:grey;">v1.0</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
-            <b style="color:red;">Reset all DB Entries?</b><br><br> Please note: this will NOT delete any entries in
-            your Excel spreadsheet. This will only reset your DB incase it includes any entries from previous
-            spreadsheet loads with bad entries.
+            <b style="color:red;">Reset all DB Entries?</b><br><br> 
         </div>
     </div>
     @if(isset($response))

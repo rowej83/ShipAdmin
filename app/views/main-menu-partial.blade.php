@@ -9,7 +9,9 @@
                 Builder</a></li>
         <li class="pure-menu-item"><span>|</span></li>
 
-        <li class="pure-menu-item"><a href="<?php echo route('parseGetPDF');?>" class="pure-menu-link">Kohls.com</a>
+        <li class="pure-menu-item"><a href="<?php echo route('retrieveGetKohlsPDF');?>" class="pure-menu-link">Kohls.com</a>
+        </li>
+            <li class="pure-menu-item"><a href="<?php echo route('retrieveGetLAndTPDF');?>" class="pure-menu-link">Lord & Taylor</a>
         </li>
 
 
