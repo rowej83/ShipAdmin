@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Kohls Packing Slips to DB</title>
+    <title>Add Lord & Taylor Packing Slips to DB</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
     <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
@@ -13,14 +13,14 @@
 
 <div style="width:800px;margin:0 auto;">
     @include('main-menu-partial')
-    @include('sub-menu-kohls')
+    @include('sub-menu-LAndT')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Add Kohls.com Packing Slips to DB
-                <small style="font-size: .4em;color:grey;"> v1.1</small>
+            <h1>Add Lord & Taylor Packing Slips to DB
+                <small style="font-size: .4em;color:grey;"> v1.0</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
-            Instructions: Upload a Kohls.com packing slip to add POs to the DB. Can add multiple pdfs at one time.
+            Instructions: Upload a Lord & Taylor packing slip to add POs to the DB. Can add multiple pdfs at one time.
         </div>
     </div>
     @if(isset($response))
@@ -32,7 +32,7 @@
             </div>
         </div>
     @endif
-    <form class="pure-form" action="parseKohlsPDF" method="post" enctype="multipart/form-data">
+    <form class="pure-form" action="parseLAndTPDF" method="post" enctype="multipart/form-data">
         <div class="pure-g" style="margin:30px;">
 
             {{ Form::file('packinglist[]', ['class' => 'form-control','multiple'=>true]) }}

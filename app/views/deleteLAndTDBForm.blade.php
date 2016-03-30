@@ -15,13 +15,13 @@
 
 
     @include('main-menu-partial')
-    @include('sub-menu-kohls')
+    @include('sub-menu-LAndT')
 
 
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1"><b style="color:red" id="reloadText"></b></div>
         <div class="pure-u-1">
-            <h1>Reset Kohls DB
+            <h1>Reset Lord and Taylor DB
                 <small style="font-size: .4em;color:grey;">v1.0</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
@@ -38,7 +38,7 @@
         </div>
     @endif
 
-    <form class="pure-form" action="<?php echo route('deleteKohlsDBSubmission'); ?>" method="post">
+    <form class="pure-form" action="<?php echo route('deleteLAndTDBSubmission'); ?>" method="post">
         <div class="pure-g " style="margin-top:30px;">
             <div class="pure-u-1-3">
 

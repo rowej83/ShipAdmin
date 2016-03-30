@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Kohls Packing Slips to DB</title>
+    <title>Retrieve packinglists from Kohls.com POs</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
     <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
@@ -13,14 +13,14 @@
 
 <div style="width:800px;margin:0 auto;">
     @include('main-menu-partial')
-    @include('sub-menu-kohls')
+    @include('sub-menu-LAndT')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Add Kohls.com Packing Slips to DB
-                <small style="font-size: .4em;color:grey;"> v1.1</small>
-                {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
+            <h1>Retrieve PDF from Lord & Taylor POs
+                <small style="font-size: .4em;color:grey;"> v1.0</small>
+                <small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>
             </h1>
-            Instructions: Upload a Kohls.com packing slip to add POs to the DB. Can add multiple pdfs at one time.
+            Instructions: Supply a list of POs to receive a custom packing list.
         </div>
     </div>
     @if(isset($response))
@@ -32,17 +32,20 @@
             </div>
         </div>
     @endif
-    <form class="pure-form" action="parseKohlsPDF" method="post" enctype="multipart/form-data">
+    <form class="pure-form" action="retrieveLAndTPDF" method="post">
         <div class="pure-g" style="margin:30px;">
-
-            {{ Form::file('packinglist[]', ['class' => 'form-control','multiple'=>true]) }}
+            <div class="pure-u-1">
+                {{ Form::label('packinglist', 'Packing List POs:', ['class' => 'control-label']) }}<br><br>
+                {{ Form::textarea('packinglist') }}
+            </div>
         </div>
         {{--<script>     function reset(){
-                        $('textarea').val('');
-                        }</script>--}}
+                $('textarea').val('');
+            }</script>--}}
         <div class="pure-g" style="margin-top:50px;">
-            <div class="pure-1"><input type="submit" id="submitButton" value="Add POs to DB" class="pure-button-primary pure-button"
-                                       style="" class="pure-button"/></div>
+            <div class="pure-1"><input type="submit" id="submitButton" value="Get Packinglist from POs"
+                                       class="pure-button-primary pure-button" style="" class="pure-button"/><input
+                        type="reset" value="Reset" class="pure-button" style="" class="pure-button"/></div>
         </div>
     </form>
 
@@ -64,6 +67,7 @@
 
 
             });
+
             $("#submitButton").click(function (e) {
 
                 $.magnificPopup.open({
@@ -71,12 +75,9 @@
                         src: '#loader'
                     },
                     type: 'inline',
-                    closeOnBgClick:false,
-                    enableEscapeKey:false
+                    closeOnBgClick:false
                 });
 
-
-            });
 //            $("input:radio").click(function(e){
 //            if($(this).attr("id")=="option-two"){
 //                   $('#addShipments').show();
@@ -87,7 +88,9 @@
 //            });
 
 
-        });
+        })});
+
+
     </script>
 </div>
 <div id="loader" class="mfp-hide" style="background-color:inherit;color:white;width:300px;margin:0 auto; padding:20px;"><p
@@ -97,8 +100,6 @@
         <div class="double-bounce1"></div>
         <div class="double-bounce2"></div>
     </div>
-    <p style="color:white;text-align: center;margin:0 auto;width: 300px;margin-top:10px;">Depending on how many packing lists your uploading, this may take a few minutes.</p>
 </div>
-
 </body>
 </html>

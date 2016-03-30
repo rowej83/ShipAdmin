@@ -35,3 +35,20 @@ Route::get('checkforground',
 Route::post('checkforground',
     ['as' => 'Postcheckforground', 'uses' => 'KohlsController@Postcheckforground']);
 
+<<<<<<< HEAD
+=======
+Route::get('deleteLAndTDB', ['as' => 'deleteLAndTDBForm', 'uses' => 'LordAndTaylorController@deleteDBForm']);
+Route::post('deleteLAndTDB', ['as' => 'deleteLAndTDBSubmission', 'uses' => 'LordAndTaylorController@deleteDBSubmission']);
+
+Route::get('/parseLAndTPDF',
+    ['as' => 'parseGetLAndTPDF', 'uses' => 'LordAndTaylorController@parseGetPDF']);
+
+Route::post('/parseLAndTPDF',
+    ['as' => 'parsePostLAndTPDF', 'uses' => 'LordAndTaylorController@parsePostPDF']);
+
+Route::get('/retrieveLAndTPDF',
+    ['as' => 'retrieveGetLAndTPDF', 'uses' => 'LordAndTaylorController@retrieveGetPDF']);
+
+Route::post('/retrieveLAndTPDF',
+    ['as' => 'retrievePostLAndTPDF', 'uses' => 'LordAndTaylorController@retrievePostPDF']);
+>>>>>>> feature
