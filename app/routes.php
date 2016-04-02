@@ -51,3 +51,20 @@ Route::get('/retrieveLAndTPDF',
 Route::post('/retrieveLAndTPDF',
     ['as' => 'retrievePostLAndTPDF', 'uses' => 'LordAndTaylorController@retrievePostPDF']);
 
+//macys below
+
+Route::get('deleteMacysDB', ['as' => 'deleteMacysDBForm', 'uses' => 'MacysController@deleteDBForm']);
+Route::post('deleteMacysDB', ['as' => 'deleteMacysDBSubmission', 'uses' => 'MacysController@deleteDBSubmission']);
+
+Route::get('/parseMacysPDF',
+    ['as' => 'parseGetMacysPDF', 'uses' => 'MacysController@parseGetPDF']);
+
+Route::post('/parseMacysPDF',
+    ['as' => 'parsePostMacysPDF', 'uses' => 'MacysController@parsePostPDF']);
+
+Route::get('/retrieveMacysPDF',
+    ['as' => 'retrieveGetMacysPDF', 'uses' => 'MacysController@retrieveGetPDF']);
+
+Route::post('/retrieveMacysPDF',
+    ['as' => 'retrievePostMacysPDF', 'uses' => 'MacysController@retrievePostPDF']);
+

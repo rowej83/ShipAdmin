@@ -13,6 +13,9 @@
         </li><span>|</span>
             <li class="pure-menu-item"><a href="<?php echo route('retrieveGetLAndTPDF');?>" class="pure-menu-link">Lord & Taylor</a>
         </li>
+        <span>|</span>
+        <li class="pure-menu-item"><a href="<?php echo route('retrieveGetMacysPDF');?>" class="pure-menu-link">Macys.com</a>
+        </li>
 
 
 

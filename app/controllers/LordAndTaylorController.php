@@ -206,15 +206,17 @@ class LordAndTaylorController extends \BaseController
     public function parsePostPDF()
     {
 
-        $validator = Validator::make(Input::all(),
-            array(
-                'packinglist' => 'required'
-            )
-        );
+//        $validator = Validator::make(Input::all(),
+//            array(
+//                'packinglist' => 'required'
+//            )
+//        );
+//
+//
+//        if (!$validator->fails()) {
 
 
-        if (!$validator->fails()) {
-
+            if(Input::file('packinglist')[0]!=NULL){
             //validation passes
             $files = Input::file('packinglist');
             $this->split_multi_pdf($files);
