@@ -35,8 +35,7 @@ Route::get('checkforground',
 Route::post('checkforground',
     ['as' => 'Postcheckforground', 'uses' => 'KohlsController@Postcheckforground']);
 
-<<<<<<< HEAD
-=======
+
 Route::get('deleteLAndTDB', ['as' => 'deleteLAndTDBForm', 'uses' => 'LordAndTaylorController@deleteDBForm']);
 Route::post('deleteLAndTDB', ['as' => 'deleteLAndTDBSubmission', 'uses' => 'LordAndTaylorController@deleteDBSubmission']);
 
@@ -51,4 +50,4 @@ Route::get('/retrieveLAndTPDF',
 
 Route::post('/retrieveLAndTPDF',
     ['as' => 'retrievePostLAndTPDF', 'uses' => 'LordAndTaylorController@retrievePostPDF']);
->>>>>>> feature
+

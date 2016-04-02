@@ -30,57 +30,6 @@ class LordAndTaylorController extends \BaseController
 
     }
 
-//     public function Getcheckforground()
-//     {
-//         return View::make('kohls-check-if-ground-input');
-//     }
-
-//     public function Postcheckforground()
-//     {
-//         $validator = Validator::make(Input::all(),
-//             array(
-//                 'pos' => 'required'
-//             )
-//         );
-
-
-//         if (!$validator->fails()) {
-//             $nonGroundPOS = array();
-//             $notInDBPOS = array();
-
-//             $inputArray = $this->prepareArray(Input::get('pos'));
-//             foreach ($inputArray as $tempItem) {
-//                 $tempPO = LAndTPackingList::where('po', '=', $tempItem)->first();
-//                 if ($tempPO == null) {
-//                     array_push($notInDBPOS, $tempItem);
-//                     //not in db
-//                 } else {
-//                     if ($tempPO->shipterms != 'Ground') {
-//                         array_push($nonGroundPOS, $tempItem);
-//                     }
-
-//                 }
-
-//             }
-//             $queryPOString = $this->joinKohlsParsePO($nonGroundPOS);
-//             $data['nonGroundPos'] = $nonGroundPOS;
-//             $data['notInDBPos'] = $notInDBPOS;
-//             $data['queryPOString'] = $queryPOString;
-// //dd(empty($nonGroundPOS));
-//             //  dd($nonGroundPOS);
-//             if ((empty($nonGroundPOS) && empty($notInDBPOS))) {
-//                 $data['response'] = 'All of the provided POs are in the DB and are going Ground.';
-//             }
-//             return View::make('kohls-check-if-ground-output', $data);
-
-
-//         } else {
-
-//             return View::make('kohls-check-if-ground-output')->with(array('response' => '<p style="color:red;">Please provide a list of POs</p>'));
-
-//         }
-
-//     }
 
     function split_pdf($filePath, $fileName, $individualFileName, $arrayOfPos, $end_directory = false)
     {
@@ -178,7 +127,7 @@ class LordAndTaylorController extends \BaseController
 
      function checkIfArrayIndexContainsOrder($haystack){
 
-            if (strpos($haystack, 'ORDER') !== false) {
+            if (strpos($haystack, 'Customer') !== false) {
             return true;
         } 
          else {
@@ -246,12 +195,6 @@ class LordAndTaylorController extends \BaseController
             return false;
         }
 
-     
-
-      
-//         $result= strpos($haystack, 'Continental US - Standard Ground') !== false || strpos($haystack, 'UPS Ground') !== false;
-
-// return $result;
     }
 
     public function parseGetPDF()
@@ -275,47 +218,7 @@ class LordAndTaylorController extends \BaseController
             //validation passes
             $files = Input::file('packinglist');
             $this->split_multi_pdf($files);
-//            $file = Input::file('packinglist');
-//            $name = Input::file('packinglist')->getClientOriginalName();
-//            $file_name = pathinfo($name, PATHINFO_FILENAME); // file
-//            $parser = new \Smalot\PdfParser\Parser();
-//
-//            $pdf = $parser->parseFile($file);
-//            $pages = $pdf->getPages();
-//            $arrayOfPos = array();
-//
-//
-//            foreach ($pages as $page) {
-//                $text = nl2br($page->getText());
-//
-//                $tempPDF = explode('<br />', $text);
-//
-//
-//                $getPO = explode(':', $tempPDF[10]);
-//                $PO = trim($getPO[1]);
-//                array_push($arrayOfPos, $PO);
-//
-//            }
 
-            //    $pdf = new FPDI();
-            //   $pagecount = $pdf->setSourceFile($file);
-//          print_r($pagecount);
-//            print_r($arrayOfPos);
-            // dd(storage_path());
-
-
-            //  $this->split_pdf($file, $name, $file_name, $arrayOfPos, public_path());
-            // How many pages?
-            //  $totalOfPos = count($arrayOfPos);
-            //  $queryString = $this->joinKohlsParsePO($arrayOfPos);
-            //    $data['POs'] = $arrayOfPos;
-            //   $returnPOString='';
-//            foreach($arrayOfPos as $returnPO){
-//                $returnPOString.=$returnPO.'<br>';
-//            }
-//            $data['POs']=$returnPOString;
-//            $data['totalOfPOs'] = $totalOfPos;
-//            $data['queryString'] = $queryString;
             return View::make('parsepdfLAndT-importpdf-output');
         } else {
 //validation fails
