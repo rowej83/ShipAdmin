@@ -388,10 +388,9 @@ class KohlsController extends \BaseController
         } else {
 
             PackingList::truncate();
-            if (Input::get('deleteLocal') != null) {
-                $this->rrmdir(storage_path() . '/Kohlspos');
-                $this->rrmdir(public_path() . '/Kohlspos');
-            }
+            $this->rrmdir(storage_path() . '/Kohlspos');
+            $this->rrmdir(public_path() . '/Kohlspos');
+
             $data['response'] = '<span style="color:red">All items in the Kohls DB have been cleared.</span>';
             return View::make('deleteKohlsDBForm', $data);
         }

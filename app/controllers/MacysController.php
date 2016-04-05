@@ -326,10 +326,9 @@ return true;
         } else {
 
             MacysPackingList::truncate();
-            if (Input::get('deleteLocal') != null) {
-                $this->rrmdir(storage_path() . '/Macyspos');
-                $this->rrmdir(public_path() . '/Macyspos');
-            }
+            $this->rrmdir(storage_path() . '/Macyspos');
+            $this->rrmdir(public_path() . '/Macyspos');
+
             $data['response'] = '<span style="color:red">All items in the Macys.com DB have been cleared.</span>';
             return View::make('deleteMacysDBForm', $data);
         }

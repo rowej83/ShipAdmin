@@ -324,10 +324,9 @@ class LordAndTaylorController extends \BaseController
         } else {
 
             LAndTPackingList::truncate();
-            if (Input::get('deleteLocal') != null) {
-                $this->rrmdir(storage_path() . '/LAndTpos');
-                $this->rrmdir(public_path() . '/LAndTpos');
-            }
+            $this->rrmdir(storage_path() . '/LAndTpos');
+            $this->rrmdir(public_path() . '/LAndTpos');
+
             $data['response'] = '<span style="color:red">All items in the Lord And Taylor DB have been cleared.</span>';
             return View::make('deleteLAndTDBForm', $data);
         }

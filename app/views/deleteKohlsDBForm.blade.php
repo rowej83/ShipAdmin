@@ -51,16 +51,7 @@
 
             <div class="pure-u-2-3"></div>
         </div>
-        <div class="pure-g " style="margin-top:30px;">
-            <div class="pure-u-1-3">
 
-
-                <input type="checkbox" name="deleteLocal" value="deleteLcal" > Delete local .pdf files
-
-            </div>
-
-            <div class="pure-u-2-3"></div>
-        </div>
         {{--<script>     function reset(){
                         $('textarea').val('');
                         }</script>--}}
@@ -90,9 +81,9 @@
 
             });
 
-            $("#reload").click(function (e) {
-                $('#reloadText').text('Loading items from the spreadsheet to the Database. Do not click again. Please wait..');
-            });
+//            $("#reload").click(function (e) {
+//                $('#reloadText').text('Loading items from the spreadsheet to the Database. Do not click again. Please wait..');
+//            });
 
 
         });
