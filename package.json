@@ -1,0 +1,19 @@
+{
+  "name": "ship-tools",
+  "version": "1.0.0",
+  "description": "Ship tools package.json",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rowej83/ShipAdmin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rowej83/ShipAdmin/issues"
+  },
+  "homepage": "https://github.com/rowej83/ShipAdmin#readme"
+}

@@ -123,8 +123,27 @@ class   AqbController extends \BaseController
                 case 'pos':
                     $stringresponse=$this->joinPurchaseOrders($tempitems);
                     break;
+                case 'customers':
+                    $stringresponse=$this->joinCustomers($tempitems);
+                    break;
+                case 'partinventoryscreen':
+                    $stringresponse=$this->joinPartsInventoryScreen($tempitems);
+                    break;
+                case 'partoutboundscreen':
+                    $stringresponse=$this->joinPartsOutBoundScreen($tempitems);
+                    break;
+                case 'amazonpos':
 
+                    // @todo will need to refactor, should not repeat it's self
+                    $tempitems=$this->prepareAmazonArray();
+                    $stringresponse=$this->joinAmazonPurchaseOrders($tempitems);
+                    $data['response'] = $stringresponse;
+                    $data['itemCount'] = count($tempitems);
+                    $data['uniqueItemCount']=count(array_unique($tempitems));
 
+                    return View::make('join-output', $data);
+
+                    break;
                 default:
                     //code to be executed if n is different from all labels;
                     $stringresponse = $this->simpleJoin($tempitems, Input::get('addShipments'));
@@ -140,6 +159,64 @@ class   AqbController extends \BaseController
         }
 
     }
+
+    private function joinPartsInventoryScreen($customersArray){
+        $stringresponse = 'iv_f.sku in ';
+        $i = 1;
+        $totalitems = count($customersArray);
+        foreach ($customersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+    private function joinPartsOutBoundScreen($customersArray){
+        $stringresponse = 'od_f.sku in ';
+        $i = 1;
+        $totalitems = count($customersArray);
+        foreach ($customersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+private function joinCustomers($customersArray){
+    $stringresponse = 'om_f.bill_custnum in ';
+    $i = 1;
+    $totalitems = count($customersArray);
+    foreach ($customersArray as $item) {
+        if ($i == 1 && $totalitems == 1) {
+            return $stringresponse .= "('" . $item . "')";
+        } elseif ($i == 1) {
+            $stringresponse .= "('" . $item . "',";
+        } elseif ($i == $totalitems) {
+            $stringresponse .= "'" . $item . "')";
+        } else {
+            $stringresponse .= "'" . $item . "',";
+        }
+        $i++;
+    }
+    return $stringresponse;
+
+}
 
     /*
   * Adds shipment numbers together for AQB and returns string.
@@ -205,6 +282,28 @@ class   AqbController extends \BaseController
    */
 
     private function joinPurchaseOrders($ordersArray)
+    {
+
+        $stringresponse = 'om_f.ship_po in ';
+        $i = 1;
+        $totalitems = count($ordersArray);
+        foreach ($ordersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+
+    private function joinAmazonPurchaseOrders($ordersArray)
     {
 
         $stringresponse = 'om_f.ship_po in ';
@@ -313,4 +412,34 @@ class   AqbController extends \BaseController
 
 
     }
+    private function prepareAmazonArray()
+    {
+        $tempItems = trim(Input::get('items'));
+        $items = explode(',', $tempItems);
+
+        $finalArray = array();
+        foreach ($items as $item) {
+            if (trim($item) != '') {
+                array_push($finalArray, trim($item));
+            }
+
+        }
+        return $finalArray;
+
+
+    }
+
+    public function ajaxJoinOrders(){
+
+
+        $array=json_decode(Input::get('orders'));
+//     return $string;
+
+     //  // return split$array;
+//$resultQueryString= $this->joinOrders($string);
+$data['resultQueryString']=$this->joinOrders($array);
+$data['count']=count($array);
+        $data['unique']=count(array_unique($array));
+        return json_encode($data);
+}
 }

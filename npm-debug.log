@@ -1,0 +1,46 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\misc\\laragon\\bin\\nodejs\\node.exe',
+1 verbose cli   'C:\\misc\\laragon\\bin\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'v' ]
+2 info using npm@2.14.2
+3 info using node@v4.0.0
+4 silly mapToRegistry name ship-tools
+5 silly mapToRegistry using default registry
+6 silly mapToRegistry registry https://registry.npmjs.org/
+7 silly mapToRegistry uri https://registry.npmjs.org/ship-tools
+8 verbose request uri https://registry.npmjs.org/ship-tools
+9 verbose request no auth needed
+10 info attempt registry request try #1 at 4:14:33 PM
+11 verbose request id a4d77ce76de256bf
+12 http request GET https://registry.npmjs.org/ship-tools
+13 info retry will retry, error on last attempt: Error: connect ECONNREFUSED 23.235.46.162:443
+14 info attempt registry request try #2 at 4:14:44 PM
+15 http request GET https://registry.npmjs.org/ship-tools
+16 info retry will retry, error on last attempt: Error: connect ECONNREFUSED 23.235.39.162:443
+17 info attempt registry request try #3 at 4:15:45 PM
+18 http request GET https://registry.npmjs.org/ship-tools
+19 verbose stack Error: connect ECONNREFUSED 199.27.76.162:443
+19 verbose stack     at Object.exports._errnoException (util.js:837:11)
+19 verbose stack     at exports._exceptionWithHostPort (util.js:860:20)
+19 verbose stack     at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1060:14)
+20 verbose cwd C:\misc\laragon\www\ship
+21 error Windows_NT 6.1.7601
+22 error argv "C:\\misc\\laragon\\bin\\nodejs\\node.exe" "C:\\misc\\laragon\\bin\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "v"
+23 error node v4.0.0
+24 error npm  v2.14.2
+25 error code ECONNREFUSED
+26 error errno ECONNREFUSED
+27 error syscall connect
+28 error Error: connect ECONNREFUSED 199.27.76.162:443
+28 error     at Object.exports._errnoException (util.js:837:11)
+28 error     at exports._exceptionWithHostPort (util.js:860:20)
+28 error     at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1060:14)
+28 error  { [Error: connect ECONNREFUSED 199.27.76.162:443]
+28 error   code: 'ECONNREFUSED',
+28 error   errno: 'ECONNREFUSED',
+28 error   syscall: 'connect',
+28 error   address: '199.27.76.162',
+28 error   port: 443 }
+29 error If you are behind a proxy, please make sure that the
+29 error 'proxy' config is set properly.  See: 'npm help config'
+30 verbose exit [ 1, true ]

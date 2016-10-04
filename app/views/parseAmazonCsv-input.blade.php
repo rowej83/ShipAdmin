@@ -13,15 +13,14 @@
 
 <div style="width:800px;margin:0 auto;">
     @include('main-menu-partial')
-    @include('sub-menu-kohls')
+
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Add Kohls.com Packing Slips to DB
+            <h1>Parse Amazon.com Routing CSV
                 <small style="font-size: .4em;color:grey;"> v1.1</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
-            Instructions: Upload a Kohls.com packing slip(s) to add POs to the DB. Can add multiple pdfs at one time.
-        </div>
+Instructions: Download the CSV file from Amazon.com to be parsed.        </div>
     </div>
     @if(isset($response))
         <div class="pure-g" style="margin-bottom:15px;">
@@ -32,16 +31,16 @@
             </div>
         </div>
     @endif
-    <form class="pure-form" action="parseKohlsPDF" method="post" enctype="multipart/form-data">
+    <form class="pure-form" action="amazoncsv" method="post" enctype="multipart/form-data">
         <div class="pure-g" style="margin:30px;">
 
-            {{ Form::file('packinglist[]', ['class' => 'form-control','multiple'=>true]) }}
+            {{ Form::file('amazonCSV', ['class' => 'form-control']) }}
         </div>
         {{--<script>     function reset(){
                         $('textarea').val('');
                         }</script>--}}
         <div class="pure-g" style="margin-top:50px;">
-            <div class="pure-1"><input type="submit" id="submitButton" value="Add POs to DB" class="pure-button-primary pure-button"
+            <div class="pure-1"><input type="submit" id="submitButton" value="Parse CSV" class="pure-button-primary pure-button"
                                        style="" class="pure-button"/></div>
         </div>
     </form>
@@ -97,7 +96,6 @@
         <div class="double-bounce1"></div>
         <div class="double-bounce2"></div>
     </div>
-    <p style="color:white;text-align: center;margin:0 auto;width: 300px;margin-top:10px;">Depending on how many packing lists your uploading, this may take a few minutes.</p>
 </div>
 
 </body>

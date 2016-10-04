@@ -52,6 +52,19 @@
                     <input id="option-five" type="radio" name="optionsRadios" value="pos">
                     Purchase Order Numbers
                 </label>
+                <label for="option-eight" class="pure-radio">
+                    <input id="option-eight" type="radio" name="optionsRadios" value="partinventoryscreen">
+                    Parts (Inventory Screen)
+                </label>
+                <label for="option-seven" class="pure-radio">
+                    <input id="option-seven" type="radio" name="optionsRadios" value="partoutboundscreen">
+                    Parts (Outbound Screen)
+                </label>
+                <label for="option-six" class="pure-radio">
+                    <input id="option-six" type="radio" name="optionsRadios" value="customers">
+                    Customers
+                </label>
+
                 <label for="option-four" class="pure-radio">
                     <input id="option-four" type="radio" name="optionsRadios" value="none">
                     None ( Join for AQB only ) <img src="{{asset('images/help-button.png')}}" id="joinonly-help" alt="">
@@ -59,6 +72,10 @@
                 <label for="option-three" class="pure-radio">
                     <input id="option-three" type="radio" name="optionsRadios" value="commas">
                     Join with commas and no space <img src="{{asset('images/help-button.png')}}" alt="" id="comma-help" class="">
+                </label>
+                <label for="option-five" class="pure-radio">
+                    <input id="option-five" type="radio" name="optionsRadios" value="amazonpos">
+                    Amazon POs
                 </label>
                 <hr>
                 <b>Options:</b>

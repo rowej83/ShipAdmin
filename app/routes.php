@@ -68,3 +68,17 @@ Route::get('/retrieveMacysPDF',
 Route::post('/retrieveMacysPDF',
     ['as' => 'retrievePostMacysPDF', 'uses' => 'MacysController@retrievePostPDF']);
 
+    Route::get('/descrambledo', ['as' => 'descrambledo', function(){
+        return View::make('do-descrambler');
+    }]);
+
+
+Route::post('/ajaxJoinOrders',['as'=>'ajaxJoinOrders','uses'=>'AqbController@ajaxJoinOrders']);
+
+
+Route::get('amazoncsv',['as'=>'amazoncsvGET','uses'=>'AmazonController@getPreRouting']);
+Route::post('amazoncsv',['as'=>'amazoncsvPOST','uses'=>'AmazonController@postPreRouting']);
+
+Route::get('testcsv', function () {
+
+});
