@@ -214,8 +214,13 @@ class KohlsController extends \BaseController
         if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
             return true;
         } elseif (strpos($haystack, 'UPS Ground') !== false) {
+
             return true;
-        } else {
+        } elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
+
+            return true;
+        }
+        else {
             return false;
         }
 //         $result= strpos($haystack, 'Continental US - Standard Ground') !== false || strpos($haystack, 'UPS Ground') !== false;
