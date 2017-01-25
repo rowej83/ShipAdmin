@@ -76,8 +76,7 @@ function getPreRouting(){
                 return View::make('parseAmazonCsv-output', $data);
         }else{
             //validation fails
-$data['response']="<br><span style='color:red;'>Please select a .csv file to parse.</span>";
-            return View::make('parseAmazonCsv-input',$data);
+
         }
 
     }

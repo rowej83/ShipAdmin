@@ -23,8 +23,8 @@
         <div class="pure-u-1"><b style="color:red" id="reloadText"></b></div>
         <div class="pure-u-1">
             <h1>Shipment Estimator
-                <small style="font-size: .4em;color:grey;">v1.0</small>
-                {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
+                {{--<small style="font-size: .4em;color:grey;">v1.0</small>--}}
+                <small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>
             </h1>
             Instructions: Copy a column of CMMFs ( without headings ) from excel into the text field labeled CMMFs.
             Then, copy the associated quantity column from excel ( without headings ) in to the text field labeled

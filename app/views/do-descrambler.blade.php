@@ -17,7 +17,7 @@
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
             <h1>Extract DOs from text
-                <small style="font-size: .4em;color:grey;"> v1.0</small>
+                {{--<small style="font-size: .4em;color:grey;"> v1.0</small>--}}
                 <small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>
             </h1>
             Instructions: Enter text to extract DOs

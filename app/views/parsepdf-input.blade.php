@@ -18,8 +18,8 @@
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
             <h1>Kohls Packing Slip Parser
-                <small style="font-size: .4em;color:grey;"> v1.0</small>
-                {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
+                {{--<small style="font-size: .4em;color:grey;"> v1.0</small>--}}
+                <small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>
             </h1>
             Instructions: Upload a Kohls.com packing slip and it will return POs
         </div>

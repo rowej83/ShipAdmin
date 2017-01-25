@@ -82,3 +82,7 @@ Route::post('amazoncsv',['as'=>'amazoncsvPOST','uses'=>'AmazonController@postPre
 Route::get('testcsv', function () {
 
 });
+
+Route::get('getChargeBack',['as'=>'ChargeBackGET','uses'=>'ChargeBackController@getChargeBack']);
+
+Route::post('postChargeBack',['as'=>'ChargeBackPOST','uses'=>'ChargeBackController@postChargeBack']);

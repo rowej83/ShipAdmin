@@ -18,8 +18,8 @@
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
             <h1>Advanced Query Builder
-                <small style="font-size: .4em;color:grey;"> v1.2</small>
-                {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
+                {{--<small style="font-size: .4em;color:grey;"> v1.2</small>--}}
+                <small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>
             </h1>
             Instructions: Paste a list of items that will be joined with ' ' and ,'s to be pasted into an advanced query
             in Viaware.<br><br> Useful for bringing up specific orders in Viaware via Advanced Query by either the order # ( DO ) , SHP #, or Purchase order.<br><br> Please Note - any blank lines submitted will not be included in your result.
@@ -76,6 +76,10 @@
                 <label for="option-five" class="pure-radio">
                     <input id="option-five" type="radio" name="optionsRadios" value="amazonpos">
                     Amazon POs
+                </label>
+                <label for="option-nine" class="pure-radio">
+                    <input id="option-nine" type="radio" name="optionsRadios" value="docfetcher">
+                    DocFetcher
                 </label>
                 <hr>
                 <b>Options:</b>

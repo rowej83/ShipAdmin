@@ -132,6 +132,9 @@ class   AqbController extends \BaseController
                 case 'partoutboundscreen':
                     $stringresponse=$this->joinPartsOutBoundScreen($tempitems);
                     break;
+                case 'docfetcher':
+                    $stringresponse=$this->joinForDocFetcher($tempitems);
+                    break;
                 case 'amazonpos':
 
                     // @todo will need to refactor, should not repeat it's self
@@ -179,6 +182,27 @@ class   AqbController extends \BaseController
         return $stringresponse;
 
     }
+    private function joinForDocFetcher($customersArray){
+      //  $stringresponse = 'iv_f.sku in ';
+        $stringresponse='';
+        $i = 1;
+        $totalitems = count($customersArray);
+        foreach ($customersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "*" . $item . "*";
+            } elseif ($i == 1) {
+                $stringresponse .= "*" . $item . "*";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= " OR *" . $item . "*";
+            } else {
+                $stringresponse .= " OR *" . $item . "*";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
+
     private function joinPartsOutBoundScreen($customersArray){
         $stringresponse = 'od_f.sku in ';
         $i = 1;

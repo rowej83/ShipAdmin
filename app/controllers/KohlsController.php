@@ -184,7 +184,7 @@ class KohlsController extends \BaseController
 
         $pdf = $parser->parseFile($file);
         $pages = $pdf->getPages();
-
+//dd($pages);
         foreach ($pages as $page) {
             $text = nl2br($page->getText());
 
