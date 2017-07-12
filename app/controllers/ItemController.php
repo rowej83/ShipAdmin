@@ -232,11 +232,11 @@ class ItemController extends \BaseController
             //now checks each of the cmmfs (broken up by newline) supplied from input
             foreach ($cmmfs as $cmmf) {
 
-                $item = Item::where('cmmf', '=', $cmmf)->first();
+                $item = Item::where('cmmf', '=', trim($cmmf))->first();
                 //checks if cmmf
                 if ($item == null) {
                     //item isn't found, so added to the $notFoundItems array to be displayed later and shows as NA for that row/item
-                    array_push($notFoundItems, $cmmf);
+                    array_push($notFoundItems, trim($cmmf));
                     //echo $cmmf . ' not in DB<br>';
                     $response .= '<tr>
                         <td>

@@ -424,15 +424,20 @@ private function joinCustomers($customersArray){
     {
         $tempItems = trim(Input::get('items'));
         $items = explode(PHP_EOL, $tempItems);
+        $badItemsToTest=['shp#','totals','total','shipment','shipment#',''];
 
         $finalArray = array();
+
         foreach ($items as $item) {
-            if (trim($item) != '') {
+
+            if (in_array(strtolower(trim($item)),$badItemsToTest)==false) {
                 array_push($finalArray, trim($item));
             }
 
         }
         return $finalArray;
+
+
 
 
     }

@@ -6,8 +6,11 @@
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
     <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
+    <link rel="stylesheet" href="<?php echo URL::asset('DataTables/datatables.min.css'); ?>">
     <script src="<?php echo URL::asset('js/scripts.js'); ?>"></script>
     <script src="<?php echo URL::asset('js/jquery.magnific-popup.min.js'); ?>"></script>
+    <script src="<?php echo URL::asset('DataTables/jquery.dataTables.js'); ?>"></script>
+
 
 
 </head>
