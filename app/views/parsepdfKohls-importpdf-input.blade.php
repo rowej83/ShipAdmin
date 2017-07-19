@@ -45,6 +45,23 @@
                                        style="" class="pure-button"/></div>
         </div>
     </form>
+    <hr>
+
+    <div class="pure-g" style="margin-top:20px;">
+
+        <div class="pure-u-1">
+            <button id="errorareatoggle" style="">Having trouble importing packinglists?</button>
+           <div id="errorarea" style="display:none;">
+            <p>If you have an error while trying to import a pdf, the file may be corrupt. You can try going to the below website and converting it to another pdf version.</p>
+            <br>
+            <a href="https://docupub.com/pdfconvert/" target="_blank">Convert PDF</a>
+            <p>Select version 1.3, convert and download and try again to import.</p>
+            <br>
+            <img src="<?php echo URL::asset('images/conversion-example.png') ?>" alt="">
+           </div>
+            
+        </div>
+    </div>
 
 
     {{--<script>$("form").keypress(function(ev){--}}
@@ -57,6 +74,14 @@
             //doesn't wait for images, style sheets etc..
             //is called after the DOM has been initialized
 //                    alert("hello");
+           // $('#errorarea').hide();
+            $('#errorareatoggle').click(
+                function(e){
+                    e.preventDefault();
+                    $('#errorarea').toggle();
+
+                }
+            )
             $(".reset").click(function (e) {
                 e.preventDefault();
                 $("textarea").val('');

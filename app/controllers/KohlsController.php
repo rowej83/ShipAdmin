@@ -135,9 +135,11 @@ class KohlsController extends \BaseController
         }
         foreach ($arrayOfFiles as $file) {
             $tempArrayOfPos = array();
+        //    $infoOfFile=$this->getArrayOfPOs($file);
             $tempArrayOfPos = $this->getArrayOfPOs($file);
             $pdf = new FPDI();
             $pagecount = $pdf->setSourceFile($file); // How many pages?
+         // $pagecount=$infoOfFile['poCount'];
             for ($i = 1; $i <= $pagecount; $i++) {
                 $singleItem = $tempArrayOfPos[$i - 1];
                 //   dd($singleItem);
@@ -179,31 +181,42 @@ class KohlsController extends \BaseController
     function getArrayOfPOs($file)
     {
         $returnArray = array();
-
+    //    $returnArray['items']=array();
         $parser = new \Smalot\PdfParser\Parser();
 
         $pdf = $parser->parseFile($file);
         $pages = $pdf->getPages();
+       // dd($pages);
 //dd($pages);
+   //     $poCount=0;
+//dd($pages);
+
         foreach ($pages as $page) {
-            $text = nl2br($page->getText());
 
-            $tempPDF = explode('<br />', $text);
+            if ($page!=null) {
+            //    $poCount++;
+                $text = nl2br($page->getText());
+
+                $tempPDF = explode('<br />', $text);
 
 
-            $getPO = explode(':', $tempPDF[10]);
-            $data['PO'] = trim($getPO[1]);
-            $isGround = $this->checkIfGround($text);
-            if ($isGround) {
-                $data['shipterms'] = "Ground";
-            } else {
-                $data['shipterms'] = "Not Ground";
+                $getPO = explode(':', $tempPDF[10]);
+                $data['PO'] = trim($getPO[1]);
+                $isGround = $this->checkIfGround($text);
+                if ($isGround) {
+                    $data['shipterms'] = "Ground";
+                } else {
+                    $data['shipterms'] = "Not Ground";
+                }
+                //    $PO = trim($getPO[1]);
+                array_push($returnArray, $data);
             }
-            //    $PO = trim($getPO[1]);
-            array_push($returnArray, $data);
 
         }
 //dd($returnArray);
+       // $returnArray['poCount']=$poCount;
+
+       // dd($returnArray);
         return $returnArray;
 
     }
