@@ -171,6 +171,27 @@ class KohlsController extends \BaseController
 
     }
 
+    private function joinPurchaseOrders($ordersArray)
+    {
+
+        $stringresponse = 'om_f.ship_po in ';
+        $i = 1;
+        $totalitems = count($ordersArray);
+        foreach ($ordersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
 
     public function index()
     {
@@ -202,12 +223,18 @@ class KohlsController extends \BaseController
 
                 $getPO = explode(':', $tempPDF[10]);
                 $data['PO'] = trim($getPO[1]);
-                $isGround = $this->checkIfGround($text);
-                if ($isGround) {
-                    $data['shipterms'] = "Ground";
-                } else {
-                    $data['shipterms'] = "Not Ground";
+                $shipTerms = $this->checkShipMethod($text);
+                if($shipTerms==false){
+                    dd('PO '.$data['PO'].' has a unrecognized ship method. Please show this to Jason so it can be added');
+
                 }
+                $data['shipterms'] = $shipTerms;
+
+//                if ($isGround) {
+//                    $data['shipterms'] = "Ground";
+//                } else {
+//                    $data['shipterms'] = "Not Ground";
+//                }
                 //    $PO = trim($getPO[1]);
                 array_push($returnArray, $data);
             }
@@ -221,21 +248,48 @@ class KohlsController extends \BaseController
 
     }
 
-    function checkIfGround($haystack)
-    {
+//    function checkIfGround($haystack)
+//    {
+//
+//        if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
+//            return true;
+//        } elseif (strpos($haystack, 'UPS Ground') !== false) {
+//
+//            return true;
+//        } elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
+//
+//            return true;
+//        }
+//        else {
+//            return false;
+//        }
+        function checkShipMethod($haystack)
+        {
 
-        if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
-            return true;
-        } elseif (strpos($haystack, 'UPS Ground') !== false) {
+            if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
+                return 'Ground';
+            } elseif (strpos($haystack, 'UPS Ground') !== false) {
 
-            return true;
-        } elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
+                return 'Ground';
+            } elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
 
-            return true;
-        }
-        else {
-            return false;
-        }
+                return 'Ground';
+            }
+            elseif (strpos($haystack, '2nd day') !== false) {
+
+                return '2D';
+            }
+            elseif (strpos($haystack, 'Overnight') !== false) {
+
+                return 'ND';
+            }
+            elseif (strpos($haystack, 'UPS 3 Day Select') !== false) {
+
+                return '3D';
+            }
+            else {
+                return false;
+            }
 //         $result= strpos($haystack, 'Continental US - Standard Ground') !== false || strpos($haystack, 'UPS Ground') !== false;
 
 // return $result;
@@ -333,23 +387,52 @@ class KohlsController extends \BaseController
             include(app_path() . '/includes/PDFMerger.php');
             $notFoundPOs = array();
             $nonGroundPOs = array();
-            $packingListPOsArray = array();
-            $packingListPathArray = array();
-            $packingListPOs = trim(Input::get('packinglist'));
-            Session::flash('packinglist', $packingListPOs);
-            $packingListPOsArray = explode(PHP_EOL, $packingListPOs);
+            $groundPOs=array();
+            $overnightPos=array();
+            $secondDayPos=array();
+            $thirdDayPos=array();
+            $groundPackingListPathArray = array();
+            $overnightPackingListPathArray = array();
+            $secondDayPackingListPathArray = array();
+            $thirdDayPackingListPathArray = array();
 
+          //  $packingListPOsArray = array();
+            $packingListPathArray = array();
+         //   $packingListPOs = trim(Input::get('packinglist'));
+            Session::flash('packinglist', Input::get('packinglist'));
+          //  $packingListPOsArray = explode(PHP_EOL, $packingListPOs);
+            $packingListPOsArray=$this->prepareArray(trim(Input::get('packinglist')));
             foreach ($packingListPOsArray as $packingListPO) {
                 $tempPackingList = PackingList::where('po', '=', $packingListPO)->first();
                 if ($tempPackingList == null) {
                     //do not have packing list yet
                     array_push($notFoundPOs, $packingListPO);
                 } else {
-                    array_push($packingListPathArray, $tempPackingList->pathToFile);
+                  //  array_push($packingListPathArray, $tempPackingList->pathToFile);
                     // dd($tempPackingList->shipterms=='Ground');
-                    if ($tempPackingList->shipterms != 'Ground') {
-                        array_push($nonGroundPOs, $packingListPO);
-                    }
+//                    if ($tempPackingList->shipterms != 'Ground') {
+//                        array_push($nonGroundPOs, $packingListPO);
+//                    }
+
+                        switch ($tempPackingList->shipterms) {
+                            case 'Ground':
+                                array_push($groundPackingListPathArray,$tempPackingList->pathToFile);
+                                array_push($groundPOs,$packingListPO);
+                                break;
+                            case 'ND':
+                                array_push($overnightPackingListPathArray,$tempPackingList->pathToFile);
+                                array_push($overnightPos,$packingListPO);
+                                break;
+                            case '2D':
+                                array_push($secondDayPackingListPathArray,$tempPackingList->pathToFile);
+                                array_push($secondDayPos,$packingListPO);
+                            break;
+                            case '3D':
+                                array_push($thirdDayPackingListPathArray,$tempPackingList->pathToFile);
+                                array_push($thirdDayPos,$packingListPO);
+                                break;
+                        }
+
 
 
                 }
@@ -364,19 +447,145 @@ class KohlsController extends \BaseController
 
 
             } else {
+//                $groundPOs=array();
+//                $overnightPos=array();
+//                $secondDayPos=array();
+//                $thirdDayPos=array();
+//                $groundPackingListPathArray = array();
+//                $overnightPackingListPathArray = array();
+//                $secondDayPackingListPathArray = array();
+//                $thirdDayPackingListPathArray = array();
+                //different types of shipment variables just listed above to remember
                 //return a download file..we have all Packing lists
-                $pdf = new PDFMerger;
-                foreach ($packingListPathArray as $packingListPath) {
-                    $pdf->addPDF($packingListPath);
+
+                //if only type of ship method exists for the request group of POs ... only return the path to the file and not the queries
+
+                if(empty($overnightPackingListPathArray)&&empty($secondDayPackingListPathArray)&&empty($thirdDayPackingListPathArray)){
+                    //beginning of making a group of packing list, need to now make for seperate types
+                    $pdf = new PDFMerger;
+                    foreach ($groundPackingListPathArray as $packingListPath) {
+                        $pdf->addPDF($packingListPath);
+                    }
+                    $tempoutputpath = 'output' . '-' . time() . '.pdf';
+                    $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                    $pdf->merge('file', $outputpath);
+                    $outputpath = 'Kohlspos/' . $tempoutputpath;
+                    //end of making a group of packinglist
+
+                    $data['response'] = $this->createDownloadLink($outputpath,'Click here to download the generated packing lists (All Ground)');
+                    // dd($nonGroundPOs);
+                    //    $data['outputpath'] = $outputpath;
+
+
+
+                    return View::make('parsepdfKohls-exportpdf-output', $data);
+
+                }else{
+                    //response to build
+                    $response='';
+
+                    //other types of ship methods exist so return associated queries with them
+
+                    //begin ground
+                    if(empty($groundPackingListPathArray)==false){
+                        $pdf = new PDFMerger;
+                        foreach ($groundPackingListPathArray as $packingListPath) {
+                            $pdf->addPDF($packingListPath);
+                        }
+                        $tempoutputpath = 'output' . '-' . time() .'ground'. '.pdf';
+                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $pdf->merge('file', $outputpath);
+                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $response.='Query for Ground POs: <br><br>';
+                        $response.=$this->joinPurchaseOrders($groundPOs).'<br><br>';
+                        $response.=$this->createDownloadLink($outputpath,'Click here to download the Ground packing lists');
+
+
+                    }
+
+
+                    //end ground
+
+
+                    //begin overnight
+                    if(empty($overnightPackingListPathArray)==false){
+                        $pdf = new PDFMerger;
+                        foreach ($overnightPackingListPathArray as $packingListPath) {
+                            $pdf->addPDF($packingListPath);
+                        }
+                        $tempoutputpath = 'output' . '-' . time().'on' . '.pdf';
+                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $pdf->merge('file', $outputpath);
+                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $response.='Query for Overnight POs: <br><br>';
+                        $response.=$this->joinPurchaseOrders($overnightPos).'<br><br>';
+                        $response.=$this->createDownloadLink($outputpath,'Click here to download the Overnight packing lists');
+
+
+                    }
+                    //end overnight
+
+
+                    //begin second day
+                    if(empty($secondDayPackingListPathArray)==false){
+                        $pdf = new PDFMerger;
+                        foreach ($secondDayPackingListPathArray as $packingListPath) {
+                            $pdf->addPDF($packingListPath);
+                        }
+                        $tempoutputpath = 'output' . '-' . time() .'2nd'. '.pdf';
+                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $pdf->merge('file', $outputpath);
+                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $response.='Query for 2nd Day POs: <br><br>';
+                        $response.=$this->joinPurchaseOrders($secondDayPos).'<br><br>';
+                        $response.=$this->createDownloadLink($outputpath,'Click here to download the 2nd Day packing lists');
+
+                    }
+
+                    //end second day
+
+
+                    //begin third day
+                    if(empty($thirdDayPackingListPathArray)==false){
+                        $pdf = new PDFMerger;
+                        foreach ($thirdDayPackingListPathArray as $packingListPath) {
+                            $pdf->addPDF($packingListPath);
+                        }
+                        $tempoutputpath = 'output' . '-' . time() .'3rd'. '.pdf';
+                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $pdf->merge('file', $outputpath);
+                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $response.='Query for 3rd Day POs: <br><br>';
+                        $response.=$this->joinPurchaseOrders($thirdDayPos).'<br><br>';
+                        $response.=$this->createDownloadLink($outputpath,'Click here to download the 3rd Day packing lists');
+
+                    }
+
+                    //end third day
+                    $data['response']=$response;
+                    return View::make('parsepdfKohls-exportpdf-output', $data);
                 }
-                $tempoutputpath = 'output' . '-' . time() . '.pdf';
-                $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
-                $pdf->merge('file', $outputpath);
-                $outputpath = 'Kohlspos/' . $tempoutputpath;
-                $data['nonGroundPos'] = $nonGroundPOs;
+
+
+
+                //beginning of making a group of packing list, need to now make for seperate types
+//                $pdf = new PDFMerger;
+//                foreach ($packingListPathArray as $packingListPath) {
+//                    $pdf->addPDF($packingListPath);
+//                }
+//                $tempoutputpath = 'output' . '-' . time() . '.pdf';
+//                $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+//                $pdf->merge('file', $outputpath);
+//                $outputpath = 'Kohlspos/' . $tempoutputpath;
+//                //end of making a group of packinglist
+//
+//                $data['nonGroundPos'] = $nonGroundPOs;
                 // dd($nonGroundPOs);
-                $data['outputpath'] = $outputpath;
-                return View::make('parsepdfKohls-exportpdf-output', $data);
+            //    $data['outputpath'] = $outputpath;
+
+
+
+
 
 
 // REPLACE 'file' WITH 'browser', 'download', 'string', or 'file' for output options
@@ -390,6 +599,9 @@ class KohlsController extends \BaseController
         }
     }
 
+    function createDownloadLink($path,$message){
+        return '<a href="'.$path.'" target="_blank">'.$message.'</a><br><br><hr>';
+    }
 
     function deleteDBForm()
     {
