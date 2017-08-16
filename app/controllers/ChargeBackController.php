@@ -24,56 +24,43 @@ class ChargeBackController extends \BaseController
                 // $Shipments = array();
                 $items = $reader->all();
 
-//$indexcount=0;
+
                 foreach ($items as $item) {
-            //    dd($item);
+
                     if (isPOStoreInArray($POStoreArray, returnLongStorePOResult($item))) {
-                          $POStoreindex = FindIndexOfPOStoreInArray($POStoreArray,returnLongStorePOResult($item));
-
-                             //   foreach ($POStoreArray[$POStoreindex]->shipments as $shipment1) {
-                               if(checkIfShipmentInPOStore($POStoreArray[$POStoreindex],$item->shipment)){
-                                    //dd($item->shipment);
-//                                    $indexcount++;
-                                   // if ($shipment1->shpNumber == $item->shipment) {
-                                        //shipmentalready exists...skip adding it.
-                                        //dd($POStore->shipments);
-
-                                    } else {
-                                    //    echo $shipment1->shpNumber."   ".$item->shipment."  ".count($POStoreArray[$POStoreindex]->shipments)."<br>";
-                                       // die();
-                                        //shipment doesnt exist, add it
-                                        $newShipment = new Shipment();
-                                        $newShipment->creationDate = $item->created_on;
-                                        $newShipment->pickDate = $item->pick_date;
-                                        $newShipment->shpNumber = $item->shipment;
-                                        $newShipment->SCAC = $item->scac;
-                                        $newShipment->shipDate = $item->acgi_date;
-                                        $newShipment->computeDaysInbetweenCreationAndShip();
-                                        $newShipment->computeDaysInbetweenPickAndShip();
-                                        array_push($POStoreArray[$POStoreindex]->shipments, $newShipment);
-
-                                    }
-                                }
-
-                            //}
+                        $POStoreindex = FindIndexOfPOStoreInArray($POStoreArray, returnLongStorePOResult($item));
 
 
-                       // }
+                        if (checkIfShipmentInPOStore($POStoreArray[$POStoreindex], $item->shipment)) {
+                            // nothing to add since the same SHP is in the POStore SHP's array
+                        } else {
 
-            //        }
-            else {
-                        //echo returnLongStorePOResult($item)." added<br>";
+                            //shipment doesnt exist in the POStore SHP's array, add it
+                            $newShipment = new Shipment();
+                            $newShipment->creationDate = $item->created_on;
+                            $newShipment->pickDate = $item->pick_date;
+                            $newShipment->shpNumber = $item->shipment;
+                            $newShipment->SCAC = $item->scac;
+                            $newShipment->shipDate = $item->acgi_date;
+                            $newShipment->computeDaysInbetweenCreationAndShip();
+                            $newShipment->computeDaysInbetweenPickAndShip();
+                            array_push($POStoreArray[$POStoreindex]->shipments, $newShipment);
+
+                        }
+                    } else {
+
                         //po store is not in array, add PO Store and shipment
+                        //Create POStore object
                         $newPOwithStore = new POwithStore();
                         $newPOwithStore->longStorePO = returnLongStorePOResult($item);
                         $newPOwithStore->shortStorePO = returnShortStorePOResult($item);
                         $newPOwithStore->creationDate = $item->created_on;
                         $newPOwithStore->cancel_date = $item->cancel_date;
                         $newPOwithStore->requested_ship_date = $item->requested_ship_date;
-                $newPOwithStore->PO=$item->purchase_order_no;
-                $newPOwithStore->deliveryDate=$item->delivery_date;
-                    $newPOwithStore->deliveryInstructions=$item->delivery_date_instruction;
-                //create shipment
+                        $newPOwithStore->PO = $item->purchase_order_no;
+                        $newPOwithStore->deliveryDate = $item->delivery_date;
+                        $newPOwithStore->deliveryInstructions = $item->delivery_date_instruction;
+                        //create shipment
                         $newShipment = new Shipment();
                         $newShipment->pickDate = $item->pick_date;
                         $newShipment->creationDate = $item->created_on;
@@ -84,42 +71,34 @@ class ChargeBackController extends \BaseController
                         $newShipment->computeDaysInbetweenPickAndShip();
                         array_push($newPOwithStore->shipments, $newShipment);
                         array_push($POStoreArray, $newPOwithStore);
-
-
                     }
 
-            //    echo "new line item<br>";
                 }
-            // end off main for loop
-             //   dd($POStoreArray);
-             //  dd($POStoreArray[0]->shipments);
+                // end off main for loop
+                //finished processesing the Excel file. Now run methods on POStore object and then create Output table string
                 foreach ($POStoreArray as $individualPOStore) {
                     $individualPOStore->computeLastShipDate();
                     $individualPOStore->returnTotalDaysInbetweenToComplete();
-                    $outputString.=$individualPOStore->summarizePOStore();
+                    $individualPOStore->reorderShipments();
+                    $outputString .= $individualPOStore->summarizePOStore();
                 }
-                $outputString.='</table></div>';
-//                $days = array();
-//                foreach ($POStoreArray as $item) {
-//                    array_push($days, $item->longStorePO . " took " . $item->totalDaysToShipComplete . " days to ship.");
-//                }
-//                dd($days);
-
-
-   // dd($indexcount);
+                $outputString .= '</table></div>';
             });
-                $data['response']=$outputString;
+            $data['response'] = $outputString;
             return View::make('parseChargeBackCsv-output', $data);
         } else {
+            // no file supplied
             $data['response'] = "<br><span style='color:red;'>Please select a spreadsheet file to parse.</span>";
             return View::make('parseChargeBackCsv-input', $data);
-            // no file supplied
+
         }
 
     }
 
 }
-
+/*
+ * Checks if POStore already exist in the POStore array
+ */
 function isPOStoreInArray($poStore, $LongStorePOResult)
 {
     if (empty($poStore)) {
@@ -133,9 +112,12 @@ function isPOStoreInArray($poStore, $LongStorePOResult)
     return false;
 
 }
+/*
+ * If the POStore does exist in Array, return the index of it
+ */
 function FindIndexOfPOStoreInArray($poStore, $LongStorePOResult)
 {
-$i=0;
+    $i = 0;
     foreach ($poStore as $item) {
         if ($item->longStorePO == $LongStorePOResult) {
             return $i;
@@ -146,26 +128,40 @@ $i=0;
 
 }
 
+/*
+ * Checks the Shipment array in POStore object to see if a shipment existed already
+ */
 
-function checkIfShipmentInPOStore($POStoreEntry,$Shipment){
+function checkIfShipmentInPOStore($POStoreEntry, $Shipment)
+{
     foreach ($POStoreEntry->shipments as $CurrentShipment) {
-        if($CurrentShipment->shpNumber==$Shipment){
+        if ($CurrentShipment->shpNumber == $Shipment) {
             return true;
         }
     }
     return false;
 
 }
+
+/*
+ * Returns a string of the store number only
+ */
 function returnOnlyStoreNumbers($storeString)
 {
     return intval(preg_replace('/[^0-9]+/', '', $storeString), 10);
 }
 
+/*
+ * Returns a string concatenated with the whole store name with the PO
+ */
 function returnLongStorePOResult($item)
 {
     return $item->name_1 . "-" . $item->purchase_order_no;
 }
 
+/*
+ * Returns a string concatenated with the store number only with the PO
+ */
 function returnShortStorePOResult($item)
 {
     return returnOnlyStoreNumbers($item->name_1) . "-" . $item->purchase_order_no;
@@ -178,7 +174,7 @@ function returnDaysInbetween($startDate, $endDate)
 
 }
 
-/*
+/*  Example for DATA returned from Excel Sheet
  *
  *   'name_1' => string 'RITE AID WOODLAND DC #81' (length=24)
       'purchase_order_no' => string '6933167' (length=7)
@@ -248,9 +244,11 @@ class Shipment
         $this->daysInbetweenCreationAndShip = $end->diffInDays($this->creationDate);
 
     }
-    function summarizeShipment(){
 
-        return $this->shpNumber." (".$this->SCAC.") "."[Pick:".$this->pickDate->format('m-d-Y').", Ship:".$this->shipDate->format('m-d-Y')."][".$this->daysInbetweenCreationAndShip."/".$this->daysInbetweenPickAndShip."]";
+    function summarizeShipment()
+    {
+
+        return $this->shpNumber . " (" . $this->SCAC . ") " . "[Pick:" . $this->pickDate->format('m-d-Y') . ", Ship:" . $this->shipDate->format('m-d-Y') . "][" . $this->daysInbetweenCreationAndShip . "/" . $this->daysInbetweenPickAndShip . "]";
     }
 
 }
@@ -269,6 +267,24 @@ class POwithStore
     public $deliveryDate;
     public $deliveryInstructions;
 
+    /*
+ Compares "SHP#s" to re-order from oldest to newest
+ */
+    function cmp($a, $b)
+    {
+        return strcmp($a->shpNumber, $b->shpNumber);
+    }
+
+    /*
+    Function reorders SHPs from oldest to newest
+    */
+    function reorderShipments()
+    {
+
+        usort($this->shipments, array($this, "cmp"));
+
+    }
+
     function computeLastShipDate()
     {
         $index = 0;
@@ -286,40 +302,46 @@ class POwithStore
         }
 
     }
-    function shipmentCount(){
+
+    function shipmentCount()
+    {
         return count($this->shipments);
     }
-    function summarizeShipments(){
-        $output="";
-        if(count($this->shipments)==1)
-        {
-            $output.=$this->shipments[0]->summarizeShipment();
+
+    function summarizeShipments()
+    {
+        $output = "";
+        if (count($this->shipments) == 1) {
+            $output .= $this->shipments[0]->summarizeShipment();
             return $output;
         }
-         $i=0;
+        $i = 0;
         foreach ($this->shipments as $shipment) {
             $i++;
-            if($i!=count($this->shipments)){
-                $output.=$shipment->summarizeShipment()." ||| ";
-            }else{
-                $output.=$shipment->summarizeShipment();
+            if ($i != count($this->shipments)) {
+                $output .= $shipment->summarizeShipment() . " ||| ";
+            } else {
+                $output .= $shipment->summarizeShipment();
             }
 
         }
         return $output;
 
     }
-function getDelDate(){
-    if ($this->deliveryDate!=null) {
-       return $this->deliveryDate->format('m-d-Y');
-    } else {
-        return "";
+
+    function getDelDate()
+    {
+        if ($this->deliveryDate != null) {
+            return $this->deliveryDate->format('m-d-Y');
+        } else {
+            return "";
+        }
     }
-}
 
 
-    function getReqShipDate(){
-        if ($this->requested_ship_date!=null) {
+    function getReqShipDate()
+    {
+        if ($this->requested_ship_date != null) {
             return $this->requested_ship_date->format('m-d-Y');
         } else {
             return "";
@@ -327,23 +349,26 @@ function getDelDate(){
     }
 
 
-
-    function getCreationDate(){
-        if ($this->creationDate!=null) {
+    function getCreationDate()
+    {
+        if ($this->creationDate != null) {
             return $this->creationDate->format('m-d-Y');
         } else {
             return "";
         }
     }
-    function summarizePOStore(){
 
-        $output="<tr>";
-        $output.="<td>".$this->shortStorePO."</td><td>".$this->longStorePO."</td><td>".$this->PO."</td><td>".$this->getCreationDate()."</td><td>".$this->getReqShipDate()."</td><td>".$this->getDelDate()."</td><td>".$this->deliveryInstructions."</td><td>".$this->lastShipDate->format('m-d-Y')."</td><td>".$this->totalDaysToShipComplete."</td><td>".$this->shipmentCount()."</td><td>".$this->summarizeShipments()."</td>";
+    function summarizePOStore()
+    {
 
-        $output.="</tr>";
+        $output = "<tr>";
+        $output .= "<td>" . $this->shortStorePO . "</td><td>" . $this->longStorePO . "</td><td>" . $this->PO . "</td><td>" . $this->getCreationDate() . "</td><td>" . $this->getReqShipDate() . "</td><td>" . $this->getDelDate() . "</td><td>" . $this->deliveryInstructions . "</td><td>" . $this->lastShipDate->format('m-d-Y') . "</td><td>" . $this->totalDaysToShipComplete . "</td><td>" . $this->shipmentCount() . "</td><td>" . $this->summarizeShipments() . "</td>";
+
+        $output .= "</tr>";
         return $output;
 
     }
+
     function returnTotalDaysInbetweenToComplete()
     {
         $end = Carbon\Carbon::parse($this->lastShipDate);

@@ -121,28 +121,28 @@ class   AqbController extends \BaseController
                     $stringresponse = $this->joinCommas($tempitems, Input::get('addShipments'));
                     break;
                 case 'pos':
-                    $stringresponse=$this->joinPurchaseOrders($tempitems);
+                    $stringresponse = $this->joinPurchaseOrders($tempitems);
                     break;
                 case 'customers':
-                    $stringresponse=$this->joinCustomers($tempitems);
+                    $stringresponse = $this->joinCustomers($tempitems);
                     break;
                 case 'partinventoryscreen':
-                    $stringresponse=$this->joinPartsInventoryScreen($tempitems);
+                    $stringresponse = $this->joinPartsInventoryScreen($tempitems);
                     break;
                 case 'partoutboundscreen':
-                    $stringresponse=$this->joinPartsOutBoundScreen($tempitems);
+                    $stringresponse = $this->joinPartsOutBoundScreen($tempitems);
                     break;
                 case 'docfetcher':
-                    $stringresponse=$this->joinForDocFetcher($tempitems);
+                    $stringresponse = $this->joinForDocFetcher($tempitems);
                     break;
                 case 'amazonpos':
 
                     // @todo will need to refactor, should not repeat it's self
-                    $tempitems=$this->prepareAmazonArray();
-                    $stringresponse=$this->joinAmazonPurchaseOrders($tempitems);
+                    $tempitems = $this->prepareAmazonArray();
+                    $stringresponse = $this->joinAmazonPurchaseOrders($tempitems);
                     $data['response'] = $stringresponse;
                     $data['itemCount'] = count($tempitems);
-                    $data['uniqueItemCount']=count(array_unique($tempitems));
+                    $data['uniqueItemCount'] = count(array_unique($tempitems));
 
                     return View::make('join-output', $data);
 
@@ -155,7 +155,7 @@ class   AqbController extends \BaseController
 
             $data['response'] = $stringresponse;
             $data['itemCount'] = count($tempitems);
-            $data['uniqueItemCount']=count(array_unique($tempitems));
+            $data['uniqueItemCount'] = count(array_unique($tempitems));
 
             return View::make('join-output', $data);
 
@@ -163,7 +163,8 @@ class   AqbController extends \BaseController
 
     }
 
-    private function joinPartsInventoryScreen($customersArray){
+    private function joinPartsInventoryScreen($customersArray)
+    {
         $stringresponse = 'iv_f.sku in ';
         $i = 1;
         $totalitems = count($customersArray);
@@ -182,9 +183,11 @@ class   AqbController extends \BaseController
         return $stringresponse;
 
     }
-    private function joinForDocFetcher($customersArray){
-      //  $stringresponse = 'iv_f.sku in ';
-        $stringresponse='';
+
+    private function joinForDocFetcher($customersArray)
+    {
+        //  $stringresponse = 'iv_f.sku in ';
+        $stringresponse = '';
         $i = 1;
         $totalitems = count($customersArray);
         foreach ($customersArray as $item) {
@@ -203,7 +206,8 @@ class   AqbController extends \BaseController
 
     }
 
-    private function joinPartsOutBoundScreen($customersArray){
+    private function joinPartsOutBoundScreen($customersArray)
+    {
         $stringresponse = 'od_f.sku in ';
         $i = 1;
         $totalitems = count($customersArray);
@@ -222,25 +226,27 @@ class   AqbController extends \BaseController
         return $stringresponse;
 
     }
-private function joinCustomers($customersArray){
-    $stringresponse = 'om_f.bill_custnum in ';
-    $i = 1;
-    $totalitems = count($customersArray);
-    foreach ($customersArray as $item) {
-        if ($i == 1 && $totalitems == 1) {
-            return $stringresponse .= "('" . $item . "')";
-        } elseif ($i == 1) {
-            $stringresponse .= "('" . $item . "',";
-        } elseif ($i == $totalitems) {
-            $stringresponse .= "'" . $item . "')";
-        } else {
-            $stringresponse .= "'" . $item . "',";
-        }
-        $i++;
-    }
-    return $stringresponse;
 
-}
+    private function joinCustomers($customersArray)
+    {
+        $stringresponse = 'om_f.bill_custnum in ';
+        $i = 1;
+        $totalitems = count($customersArray);
+        foreach ($customersArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= "('" . $item . "')";
+            } elseif ($i == 1) {
+                $stringresponse .= "('" . $item . "',";
+            } elseif ($i == $totalitems) {
+                $stringresponse .= "'" . $item . "')";
+            } else {
+                $stringresponse .= "'" . $item . "',";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
 
     /*
   * Adds shipment numbers together for AQB and returns string.
@@ -424,13 +430,13 @@ private function joinCustomers($customersArray){
     {
         $tempItems = trim(Input::get('items'));
         $items = explode(PHP_EOL, $tempItems);
-        $badItemsToTest=['shp#','totals','total','shipment','shipment#',''];
+        $badItemsToTest = ['shp#', 'totals', 'total', 'shipment', 'shipment#', ''];
 
         $finalArray = array();
 
         foreach ($items as $item) {
 
-            if (in_array(strtolower(trim($item)),$badItemsToTest)==false) {
+            if (in_array(strtolower(trim($item)), $badItemsToTest) == false) {
                 array_push($finalArray, trim($item));
             }
 
@@ -438,9 +444,8 @@ private function joinCustomers($customersArray){
         return $finalArray;
 
 
-
-
     }
+
     private function prepareAmazonArray()
     {
         $tempItems = trim(Input::get('items'));
@@ -454,21 +459,14 @@ private function joinCustomers($customersArray){
 
         }
         return $finalArray;
+  }
 
-
-    }
-
-    public function ajaxJoinOrders(){
-
-
-        $array=json_decode(Input::get('orders'));
-//     return $string;
-
-     //  // return split$array;
-//$resultQueryString= $this->joinOrders($string);
-$data['resultQueryString']=$this->joinOrders($array);
-$data['count']=count($array);
-        $data['unique']=count(array_unique($array));
+    public function ajaxJoinOrders()
+    {
+        $array = json_decode(Input::get('orders'));
+        $data['resultQueryString'] = $this->joinOrders($array);
+        $data['count'] = count($array);
+        $data['unique'] = count(array_unique($array));
         return json_encode($data);
-}
+    }
 }
