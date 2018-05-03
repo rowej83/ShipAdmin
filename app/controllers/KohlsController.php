@@ -279,6 +279,10 @@ class KohlsController extends \BaseController
 
                 return '2D';
             }
+            elseif (strpos($haystack, 'UPS 2nd Day Air') !== false) {
+
+                return '2D';
+            }
             elseif (strpos($haystack, 'Overnight') !== false) {
 
                 return 'ND';
