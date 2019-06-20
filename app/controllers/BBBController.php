@@ -1,6 +1,6 @@
 <?php
 
-class KohlsController extends \BaseController
+class BBBController extends \BaseController
 {
 
     function __construct()
@@ -32,7 +32,7 @@ class KohlsController extends \BaseController
 
     public function Getcheckforground()
     {
-        return View::make('kohls-check-if-ground-input');
+        return View::make('BBB-check-if-ground-input');
     }
 
     public function Postcheckforground()
@@ -50,7 +50,7 @@ class KohlsController extends \BaseController
 
             $inputArray = $this->prepareArray(Input::get('pos'));
             foreach ($inputArray as $tempItem) {
-                $tempPO = PackingList::where('po', '=', $tempItem)->first();
+                $tempPO = BBBPackingList::where('po', '=', $tempItem)->first();
                 if ($tempPO == null) {
                     array_push($notInDBPOS, $tempItem);
                     //not in db
@@ -62,7 +62,7 @@ class KohlsController extends \BaseController
                 }
 
             }
-            $queryPOString = $this->joinKohlsParsePO($nonGroundPOS);
+            $queryPOString = $this->joinBBBParsePO($nonGroundPOS);
             $data['nonGroundPos'] = $nonGroundPOS;
             $data['notInDBPos'] = $notInDBPOS;
             $data['queryPOString'] = $queryPOString;
@@ -71,12 +71,12 @@ class KohlsController extends \BaseController
             if ((empty($nonGroundPOS) && empty($notInDBPOS))) {
                 $data['response'] = 'All of the provided POs are in the DB and are going Ground.';
             }
-            return View::make('kohls-check-if-ground-output', $data);
+            return View::make('BBB-check-if-ground-output', $data);
 
 
         } else {
 
-            return View::make('kohls-check-if-ground-output')->with(array('response' => '<p style="color:red;">Please provide a list of POs</p>'));
+            return View::make('BBB-check-if-ground-output')->with(array('response' => '<p style="color:red;">Please provide a list of POs</p>'));
 
         }
 
@@ -84,7 +84,7 @@ class KohlsController extends \BaseController
 
     function split_pdf($filePath, $fileName, $individualFileName, $arrayOfPos, $end_directory = false)
     {
-        $new_path = storage_path() . '/Kohlspos';
+        $new_path = storage_path() . '/BBBpos';
 
 
         if (!is_dir($new_path)) {
@@ -98,18 +98,18 @@ class KohlsController extends \BaseController
 //dd($pagecount);
         // Split each page into a new PDF
         for ($i = 1; $i <= $pagecount; $i++) {
-            $tempPackingList = PackingList::where('po', '=', $arrayOfPos[$i - 1])->first();
+            $tempPackingList = BBBPackingList::where('po', '=', $arrayOfPos[$i - 1])->first();
 
             if ($tempPackingList == null) {
                 $new_pdf = new FPDI();
                 $new_pdf->AddPage();
                 $new_pdf->setSourceFile($filePath);
-                $newPackingList = new PackingList();
+                $newPackingList = new BBBPackingList();
                 $newPackingList->po = trim($arrayOfPos[$i - 1]);
                 $new_pdf->useTemplate($new_pdf->importPage($i));
 
                 try {
-                    $new_filename = storage_path() . '/Kohlspos/' . $arrayOfPos[$i - 1] . '.pdf';
+                    $new_filename = storage_path() . '/BBBpos/' . $arrayOfPos[$i - 1] . '.pdf';
 
                     $newPackingList->pathToFile = $new_filename;
                     $new_pdf->Output($new_filename, "F");
@@ -125,7 +125,7 @@ class KohlsController extends \BaseController
     function split_multi_pdf($arrayOfFiles)
     {
 
-        $new_path = storage_path() . '/Kohlspos';
+        $new_path = storage_path() . '/BBBpos';
 
 
         if (!is_dir($new_path)) {
@@ -143,19 +143,19 @@ class KohlsController extends \BaseController
             for ($i = 1; $i <= $pagecount; $i++) {
                 $singleItem = $tempArrayOfPos[$i - 1];
                 //   dd($singleItem);
-                $tempPackingList = PackingList::where('po', '=', $singleItem['PO'])->first();
+                $tempPackingList = BBBPackingList::where('po', '=', $singleItem['PO'])->first();
 
                 if ($tempPackingList == null) {
                     $new_pdf = new FPDI();
                     $new_pdf->AddPage();
                     $new_pdf->setSourceFile($file);
-                    $newPackingList = new PackingList();
+                    $newPackingList = new BBBPackingList();
                     $newPackingList->po = trim($singleItem['PO']);
                     $newPackingList->shipterms = trim($singleItem['shipterms']);
                     $new_pdf->useTemplate($new_pdf->importPage($i));
 
                     try {
-                        $new_filename = storage_path() . '/Kohlspos/' . $singleItem['PO'] . '.pdf';
+                        $new_filename = storage_path() . '/BBBpos/' . $singleItem['PO'] . '.pdf';
                         $newPackingList->pathToFile = $new_filename;
                         $new_pdf->Output($new_filename, "F");
                         $newPackingList->save();
@@ -169,6 +169,21 @@ class KohlsController extends \BaseController
         }
 
 
+    }
+
+    function findPOInArray($arrayToFindPoIn){
+
+        foreach ($arrayToFindPoIn as $line){
+
+        if(strpos($line, 'PO Number:') !== false){
+
+            $poLine=explode(':',$line);
+            //dd($poLine);
+            return trim($poLine[1]);
+        }
+
+        }
+        return false;
     }
 
     private function joinPurchaseOrders($ordersArray)
@@ -219,9 +234,14 @@ class KohlsController extends \BaseController
                 $text = nl2br($page->getText());
 
                 $tempPDF = explode('<br />', $text);
+                    $getPO=$this->findPOInArray($tempPDF);
+                    if(!$getPO){
 
+                        dd($tempPDF); // can't find PO, die and dump the specific file
 
-                $getPO = $tempPDF[5];
+                    }
+//                $poLine=explode(':',$tempPDF[16]);
+//                $getPO = $poLine[1];
                 $data['PO'] = trim($getPO);
                 $shipTerms = $this->checkShipMethod($text);
                 if($shipTerms==false){
@@ -265,15 +285,13 @@ class KohlsController extends \BaseController
 //        }
         function checkShipMethod($haystack)
         {
-
+            // BBB DS SPECIFIC: since no other methods are use we return "ground" immediately.
+            return 'Ground';
            // if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
             if (strpos($haystack, 'UPS G ro und') !== false) {
 
                 return 'Ground';
             } elseif (strpos($haystack, 'UPS Ground') !== false) {
-
-                return 'Ground';
-            } elseif (strpos($haystack, 'FedE x H om e D eliv ery') !== false) {
 
                 return 'Ground';
             } elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
@@ -310,7 +328,7 @@ class KohlsController extends \BaseController
 
     public function parseGetPDF()
     {
-        return View::make('parsepdfKohls-importpdf-input');
+        return View::make('parsepdfBBB-importpdf-input');
 
     }
 
@@ -361,7 +379,7 @@ class KohlsController extends \BaseController
             //  $this->split_pdf($file, $name, $file_name, $arrayOfPos, public_path());
             // How many pages?
             //  $totalOfPos = count($arrayOfPos);
-            //  $queryString = $this->joinKohlsParsePO($arrayOfPos);
+            //  $queryString = $this->joinBBBParsePO($arrayOfPos);
             //    $data['POs'] = $arrayOfPos;
             //   $returnPOString='';
 //            foreach($arrayOfPos as $returnPO){
@@ -370,10 +388,10 @@ class KohlsController extends \BaseController
 //            $data['POs']=$returnPOString;
 //            $data['totalOfPOs'] = $totalOfPos;
 //            $data['queryString'] = $queryString;
-            return View::make('parsepdfKohls-importpdf-output');
+            return View::make('parsepdfBBB-importpdf-output');
         } else {
 //validation fails
-            return View::make('parsepdfKohls-importpdf-input')->with(array('response' => '<p style="color:red;">Please select a packing list pdf to parse.</p>'));
+            return View::make('parsepdfBBB-importpdf-input')->with(array('response' => '<p style="color:red;">Please select a packing list pdf to parse.</p>'));
 
         }
 
@@ -383,7 +401,7 @@ class KohlsController extends \BaseController
     public function retrieveGetPDF()
     {
 
-        return View::make('parsepdfKohls-exportpdf-input');
+        return View::make('parsepdfBBB-exportpdf-input');
     }
 
     public function retrievePostPDF()
@@ -416,7 +434,7 @@ class KohlsController extends \BaseController
           //  $packingListPOsArray = explode(PHP_EOL, $packingListPOs);
             $packingListPOsArray=$this->prepareArray(trim(Input::get('packinglist')));
             foreach ($packingListPOsArray as $packingListPO) {
-                $tempPackingList = PackingList::where('po', '=', $packingListPO)->first();
+                $tempPackingList = BBBPackingList::where('po', '=', $packingListPO)->first();
                 if ($tempPackingList == null) {
                     //do not have packing list yet
                     array_push($notFoundPOs, $packingListPO);
@@ -456,7 +474,7 @@ class KohlsController extends \BaseController
                 foreach ($notFoundPOs as $notFoundPO) {
                     $notFoundPOsReturnString .= $notFoundPO . '<br>';
                 }
-                return View::make('parsepdfKohls-exportpdf-output')->with(array('response' => '<p style="color:red;">The below POs are missing:</p><br>' . $notFoundPOsReturnString));
+                return View::make('parsepdfBBB-exportpdf-output')->with(array('response' => '<p style="color:red;">The below POs are missing:</p><br>' . $notFoundPOsReturnString));
 
 
             } else {
@@ -480,18 +498,18 @@ class KohlsController extends \BaseController
                         $pdf->addPDF($packingListPath);
                     }
                     $tempoutputpath = 'output' . '-' . time() . '.pdf';
-                    $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                    $outputpath = public_path() . '/BBBpos/' . $tempoutputpath;
                     $pdf->merge('file', $outputpath);
-                    $outputpath = 'Kohlspos/' . $tempoutputpath;
+                    $outputpath = 'BBBpos/' . $tempoutputpath;
                     //end of making a group of packinglist
 
-                    $data['response'] = $this->createDownloadLink($outputpath,'Click here to download the generated packing lists (All Ground)');
+                    $data['response'] = $this->createDownloadLink($outputpath,'Click here to download the generated packing lists.');
                     // dd($nonGroundPOs);
                     //    $data['outputpath'] = $outputpath;
 
 
 
-                    return View::make('parsepdfKohls-exportpdf-output', $data);
+                    return View::make('parsepdfBBB-exportpdf-output', $data);
 
                 }else{
                     //response to build
@@ -506,9 +524,9 @@ class KohlsController extends \BaseController
                             $pdf->addPDF($packingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time() .'ground'. '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/BBBpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'BBBpos/' . $tempoutputpath;
                         $response.='Query for Ground POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($groundPOs).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the Ground packing lists');
@@ -527,9 +545,9 @@ class KohlsController extends \BaseController
                             $pdf->addPDF($packingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time().'on' . '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/BBBpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'BBBpos/' . $tempoutputpath;
                         $response.='Query for Overnight POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($overnightPos).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the Overnight packing lists');
@@ -546,9 +564,9 @@ class KohlsController extends \BaseController
                             $pdf->addPDF($packingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time() .'2nd'. '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/BBBpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'BBBpos/' . $tempoutputpath;
                         $response.='Query for 2nd Day POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($secondDayPos).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the 2nd Day packing lists');
@@ -565,9 +583,9 @@ class KohlsController extends \BaseController
                             $pdf->addPDF($packingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time() .'3rd'. '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/BBBpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'BBBpos/' . $tempoutputpath;
                         $response.='Query for 3rd Day POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($thirdDayPos).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the 3rd Day packing lists');
@@ -576,7 +594,7 @@ class KohlsController extends \BaseController
 
                     //end third day
                     $data['response']=$response;
-                    return View::make('parsepdfKohls-exportpdf-output', $data);
+                    return View::make('parsepdfBBB-exportpdf-output', $data);
                 }
 
 
@@ -587,9 +605,9 @@ class KohlsController extends \BaseController
 //                    $pdf->addPDF($packingListPath);
 //                }
 //                $tempoutputpath = 'output' . '-' . time() . '.pdf';
-//                $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+//                $outputpath = public_path() . '/BBBpos/' . $tempoutputpath;
 //                $pdf->merge('file', $outputpath);
-//                $outputpath = 'Kohlspos/' . $tempoutputpath;
+//                $outputpath = 'BBBpos/' . $tempoutputpath;
 //                //end of making a group of packinglist
 //
 //                $data['nonGroundPos'] = $nonGroundPOs;
@@ -607,7 +625,7 @@ class KohlsController extends \BaseController
 
         } else {
 
-            return View::make('parsepdfKohls-exportpdf-input')->with(array('response' => '<p style="color:red;">Please add a list of POs below.</p>'));
+            return View::make('parsepdfBBB-exportpdf-input')->with(array('response' => '<p style="color:red;">Please add a list of POs below.</p>'));
 
         }
     }
@@ -618,7 +636,7 @@ class KohlsController extends \BaseController
 
     function deleteDBForm()
     {
-        return View::make('deleteKohlsDBForm');
+        return View::make('deleteBBBDBForm');
 
     }
 
@@ -627,20 +645,20 @@ class KohlsController extends \BaseController
         $result = Input::get('delete');
         if ($result != 'Y-E-S') {
             $data['response'] = '<span style="color:red">DB reset has failed. Y-E-S was not entered.</span>';
-            return View::make('deleteKohlsDBForm', $data);
+            return View::make('deleteBBBDBForm', $data);
         } else {
 
-            PackingList::truncate();
-            $this->rrmdir(storage_path() . '/Kohlspos');
-            $this->rrmdir(public_path() . '/Kohlspos');
+            BBBPackingList::truncate();
+            $this->rrmdir(storage_path() . '/BBBpos');
+            $this->rrmdir(public_path() . '/BBBpos');
 
-            $data['response'] = '<span style="color:red">All items in the Kohls DB have been cleared.</span>';
-            return View::make('deleteKohlsDBForm', $data);
+            $data['response'] = '<span style="color:red">All items in the BBB DB have been cleared.</span>';
+            return View::make('deleteBBBDBForm', $data);
         }
 
     }
 
-    private function joinKohlsParsePO($ordersArray)
+    private function joinBBBParsePO($ordersArray)
     {
 
         $stringresponse = 'om_f.ship_po in ';

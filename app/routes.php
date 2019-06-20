@@ -68,6 +68,28 @@ Route::get('/retrieveMacysPDF',
 Route::post('/retrieveMacysPDF',
     ['as' => 'retrievePostMacysPDF', 'uses' => 'MacysController@retrievePostPDF']);
 
+//finish macys
+
+
+//BBB below
+
+Route::get('deleteBBBDB', ['as' => 'deleteBBBDBForm', 'uses' => 'BBBController@deleteDBForm']);
+Route::post('deleteBBBDB', ['as' => 'deleteBBBDBSubmission', 'uses' => 'BBBController@deleteDBSubmission']);
+
+Route::get('/parseBBBPDF',
+    ['as' => 'parseGetBBBPDF', 'uses' => 'BBBController@parseGetPDF']);
+
+Route::post('/parseBBBPDF',
+    ['as' => 'parsePostBBBPDF', 'uses' => 'BBBController@parsePostPDF']);
+
+Route::get('/retrieveBBBPDF',
+    ['as' => 'retrieveGetBBBPDF', 'uses' => 'BBBController@retrieveGetPDF']);
+
+Route::post('/retrieveBBBPDF',
+    ['as' => 'retrievePostBBBPDF', 'uses' => 'BBBController@retrievePostPDF']);
+
+//finish BBB
+
     Route::get('/descrambledo', ['as' => 'descrambledo', function(){
         return View::make('do-descrambler');
     }]);
@@ -79,7 +101,71 @@ Route::post('/ajaxJoinOrders',['as'=>'ajaxJoinOrders','uses'=>'AqbController@aja
 Route::get('amazoncsv',['as'=>'amazoncsvGET','uses'=>'AmazonController@getPreRouting']);
 Route::post('amazoncsv',['as'=>'amazoncsvPOST','uses'=>'AmazonController@postPreRouting']);
 
-Route::get('testcsv', function () {
+
+
+Route::get('testpdf', function () {
+    $file = storage_path('testpdf2.pdf');
+
+    $parser = new \Smalot\PdfParser\Parser();
+
+    $pdf = $parser->parseFile($file);
+    $pages = $pdf->getPages();
+    $countArray=[];
+
+    foreach ($pages as $page) {
+
+        if ($page != null) {
+            $text=nl2br($page->getText());
+            $tempPDF = explode('<br />', $text);
+
+            dd($tempPDF);
+//            if(isset($tempPDF[5])){
+//                $PO=substr($tempPDF[5], -7);
+//                echo $PO.'<br>';
+//                array_push($countArray,$PO);
+//
+//            }
+
+
+        }
+    }
+    echo 'count: '.count($countArray).'<br>';
+
+
+
+});
+
+
+Route::get('testmultipdf', function () {
+    $file = storage_path('testpdf2.pdf');
+
+    $parser = new \Smalot\PdfParser\Parser();
+
+    $pdf = $parser->parseFile($file);
+    $pages = $pdf->getPages();
+    $countArray=[];
+    $resultArray=[];
+    foreach ($pages as $page) {
+
+        if ($page != null) {
+            $text=nl2br($page->getText());
+            $tempPDF = explode('<br />', $text);
+            array_push($resultArray,$tempPDF);
+//            dd($tempPDF);
+//            if(isset($tempPDF[5])){
+//                $PO=substr($tempPDF[5], -7);
+//                echo $PO.'<br>';
+//                array_push($countArray,$PO);
+//
+//            }
+
+
+        }
+    }
+    dd($resultArray);
+//    echo 'count: '.count($countArray).'<br>';
+
+
 
 });
 

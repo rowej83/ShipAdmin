@@ -15,7 +15,8 @@
 
         <li class="pure-menu-item"><a href="<?php echo route('retrieveGetKohlsPDF');?>" class="pure-menu-link">Kohls.com</a>
         </li><span>|</span>
-
+        <li class="pure-menu-item"><a href="<?php echo route('retrieveGetBBBPDF');?>" class="pure-menu-link">BBB DS</a>
+        </li><span>|</span>
 
         <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
             <a href="#" id="menuLink1" class="pure-menu-link">Other Tools</a>
