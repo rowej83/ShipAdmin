@@ -277,6 +277,10 @@ class KohlsController extends \BaseController
 
                 return 'Ground';
             }
+            elseif (strpos($haystack, 'FedE x S ta ndard  O vern ig ht') !== false) {
+
+                return 'Ground';
+            }
             elseif (strpos($haystack, 'FedE x H om e D eliv ery') !== false) {
 
                 return 'Ground';
