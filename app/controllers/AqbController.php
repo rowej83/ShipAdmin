@@ -135,6 +135,9 @@ class   AqbController extends \BaseController
                 case 'docfetcher':
                     $stringresponse = $this->joinForDocFetcher($tempitems);
                     break;
+                case 'ten-digit':
+                    $stringresponse=$this->confirmTenDigits($tempitems);
+                    break;
                 case 'amazonpos':
 
                     // @todo will need to refactor, should not repeat it's self
@@ -162,7 +165,32 @@ class   AqbController extends \BaseController
         }
 
     }
+    private function confirmTenDigits($listOfPOs){
+        $stringresponse='';
+        if(count($listOfPOs)!=0){
 
+            foreach($listOfPOs as $po){
+                $poLength=strlen($po);
+                if($poLength<10){
+                    $zerosToAddToPO='';
+                    $zerosNeeded=10-$poLength;
+                    for($i=0;$i<$zerosNeeded;$i++){
+                        $zerosToAddToPO.='0';
+
+                    }
+                    $stringresponse.=$zerosToAddToPO.$po.'<br>';
+                }else{
+                    $stringresponse.=$po.'<br>';
+                }
+
+            }
+        }
+        else{
+            return 'Empty list';
+        }
+        return $stringresponse;
+
+    }
     private function joinPartsInventoryScreen($customersArray)
     {
         $stringresponse = 'iv_f.sku in ';

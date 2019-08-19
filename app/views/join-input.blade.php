@@ -81,6 +81,10 @@
                     <input id="option-nine" type="radio" name="optionsRadios" value="docfetcher">
                     DocFetcher
                 </label>
+                <label for="option-ten" class="pure-radio">
+                    <input id="option-ten" type="radio" name="optionsRadios" value="ten-digit">
+                    Check if 10 digits <img src="{{asset('images/help-button.png')}}" alt="" id="ten-digit-help" class="">
+                </label>
                 <hr>
                 <b>Options:</b>
                 <span id="addShipments" style="margin-top:20px;display: block;"> <input type="checkbox" style=""
@@ -135,6 +139,9 @@
             });
             $('#comma-help').tooltipster({
                 content: $('<div>Useful for including needed shipments when creating Mbols or getting packing lists from Wayfairs site<br><br></div><div>Given the following input: <br>SHP3211111<br>SHP3211112</div><div><br>It will return:</div><div>SHP3211111,SHP3211112</div><div><br>This can be used in Viaware\'s Paperwork screen to generate Mbols. Can also be used to list POs that are needed to be printed from Wayfairs site. </div>')
+            });
+            $('#ten-digit-help').tooltipster({
+                content: $('<div>Used for Walmart POs. They have to be 10 digits long. This will add leading zeros if it isn\'t 10 digits long.</div>')
             });
             $('#addshp-help').tooltipster({
                 content: $('<div>When querying by shipment numbers ( SHP ), this option will add the SHP to each item in the list if needed<br><br></div><div>Given the following input: <br>3211111<br>3211112</div><div><br>It will add SHP along with your query such as :</div><div>om_f.shipment in (\'SHP3211111\',\'SHP3211112\')</div><div><br><br>Please note that the Build Query using Shipment Numbers still has to be selected to get this result.</div>')
