@@ -39,54 +39,54 @@
         <div class="pure-g " style="margin-top:30px;">
             <div class="pure-u-1-3">
                 <b style="margin-top:8px;display:block;">Build Query using:</b>
-                <label for="option-one" class="pure-radio">
-                    <input id="option-one" type="radio" name="optionsRadios" value="ordernumbers" checked>
+                <label for="option-ordernums" class="pure-radio">
+                    <input id="option-ordernums" type="radio" name="optionsRadios" value="ordernumbers" checked>
                     Outbound Order Numbers
                 </label>
 
-                <label for="option-two" class="pure-radio">
-                    <input id="option-two" type="radio" name="optionsRadios" value="shipmentnumbers">
+                <label for="option-shipments" class="pure-radio">
+                    <input id="option-shipments" type="radio" name="optionsRadios" value="shipmentnumbers">
                     Shipment Numbers
                 </label>
-                <label for="option-five" class="pure-radio">
-                    <input id="option-five" type="radio" name="optionsRadios" value="pos">
+                <label for="option-pos" class="pure-radio">
+                    <input id="option-pos" type="radio" name="optionsRadios" value="pos">
                     Purchase Order Numbers
                 </label>
-                <label for="option-eight" class="pure-radio">
-                    <input id="option-eight" type="radio" name="optionsRadios" value="partinventoryscreen">
+                <label for="option-parts-inventory-screen" class="pure-radio">
+                    <input id="option-parts-inventory-screen" type="radio" name="optionsRadios" value="partinventoryscreen">
                     Parts (Inventory Screen)
                 </label>
-                <label for="option-seven" class="pure-radio">
-                    <input id="option-seven" type="radio" name="optionsRadios" value="partoutboundscreen">
+                <label for="option-parts-outbound-screen" class="pure-radio">
+                    <input id="option-parts-outbound-screen" type="radio" name="optionsRadios" value="partoutboundscreen">
                     Parts (Outbound Screen)
                 </label>
-                <label for="option-six" class="pure-radio">
-                    <input id="option-six" type="radio" name="optionsRadios" value="customers">
+                <label for="option-customers" class="pure-radio">
+                    <input id="option-customers" type="radio" name="optionsRadios" value="customers">
                     Customers
                 </label>
 
-                <label for="option-four" class="pure-radio">
-                    <input id="option-four" type="radio" name="optionsRadios" value="none">
+                <label for="option-aqb-only" class="pure-radio">
+                    <input id="option-aqb-only" type="radio" name="optionsRadios" value="none">
                     None ( Join for AQB only ) <img src="{{asset('images/help-button.png')}}" id="joinonly-help" alt="">
                 </label>
-                <label for="option-three" class="pure-radio">
-                    <input id="option-three" type="radio" name="optionsRadios" value="commas">
+                <label for="option-commas" class="pure-radio">
+                    <input id="option-commas" type="radio" name="optionsRadios" value="commas">
                     Join with commas and no space <img src="{{asset('images/help-button.png')}}" alt="" id="comma-help" class="">
                 </label>
-                <label for="option-eleven" class="pure-radio">
-                    <input id="option-eleven" type="radio" name="optionsRadios" value="spaces">
+                <label for="option-spaces" class="pure-radio">
+                    <input id="option-spaces" type="radio" name="optionsRadios" value="spaces">
                     Join with spaces in between <img src="{{asset('images/help-button.png')}}" alt="" id="spaces-help" class="">
                 </label>
-                <label for="option-five" class="pure-radio">
-                    <input id="option-five" type="radio" name="optionsRadios" value="amazonpos">
+                <label for="option-amazon-pos" class="pure-radio">
+                    <input id="option-amazon-pos" type="radio" name="optionsRadios" value="amazonpos">
                     Amazon POs
                 </label>
-                <label for="option-nine" class="pure-radio">
-                    <input id="option-nine" type="radio" name="optionsRadios" value="docfetcher">
+                <label for="option-docfetcher" class="pure-radio">
+                    <input id="option-docfetcher" type="radio" name="optionsRadios" value="docfetcher">
                     DocFetcher
                 </label>
-                <label for="option-ten" class="pure-radio">
-                    <input id="option-ten" type="radio" name="optionsRadios" value="ten-digit">
+                <label for="option-walmart-pos" class="pure-radio">
+                    <input id="option-walmart-pos" type="radio" name="optionsRadios" value="ten-digit">
                     Walmart POs check if 10 digits <img src="{{asset('images/help-button.png')}}" alt="" id="ten-digit-help" class="">
                 </label>
                 <hr>
