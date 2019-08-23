@@ -73,6 +73,10 @@
                     <input id="option-three" type="radio" name="optionsRadios" value="commas">
                     Join with commas and no space <img src="{{asset('images/help-button.png')}}" alt="" id="comma-help" class="">
                 </label>
+                <label for="option-eleven" class="pure-radio">
+                    <input id="option-eleven" type="radio" name="optionsRadios" value="spaces">
+                    Join with spaces in between <img src="{{asset('images/help-button.png')}}" alt="" id="spaces-help" class="">
+                </label>
                 <label for="option-five" class="pure-radio">
                     <input id="option-five" type="radio" name="optionsRadios" value="amazonpos">
                     Amazon POs
@@ -83,7 +87,7 @@
                 </label>
                 <label for="option-ten" class="pure-radio">
                     <input id="option-ten" type="radio" name="optionsRadios" value="ten-digit">
-                    Check if 10 digits <img src="{{asset('images/help-button.png')}}" alt="" id="ten-digit-help" class="">
+                    Walmart POs check if 10 digits <img src="{{asset('images/help-button.png')}}" alt="" id="ten-digit-help" class="">
                 </label>
                 <hr>
                 <b>Options:</b>
@@ -145,6 +149,9 @@
             });
             $('#addshp-help').tooltipster({
                 content: $('<div>When querying by shipment numbers ( SHP ), this option will add the SHP to each item in the list if needed<br><br></div><div>Given the following input: <br>3211111<br>3211112</div><div><br>It will add SHP along with your query such as :</div><div>om_f.shipment in (\'SHP3211111\',\'SHP3211112\')</div><div><br><br>Please note that the Build Query using Shipment Numbers still has to be selected to get this result.</div>')
+            });
+            $('#spaces-help').tooltipster({
+                content: $('<div>Given the following input: <br>3211111<br>3211112</div><div><br>It will produce: <br>3211111 3211112</div>')
             });
 
 

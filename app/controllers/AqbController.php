@@ -106,6 +106,7 @@ class   AqbController extends \BaseController
             //  $totalitems = count($tempitems);
             $i = 1;
             $stringresponse = '';
+            $additionalQuery='';
             $optionResult = Input::get('optionsRadios');
 
             switch ($optionResult) {
@@ -119,6 +120,9 @@ class   AqbController extends \BaseController
                 case 'commas':
 
                     $stringresponse = $this->joinCommas($tempitems, Input::get('addShipments'));
+                    break;
+                case 'spaces':
+                    $stringresponse=$this->joinSpaces($tempitems);
                     break;
                 case 'pos':
                     $stringresponse = $this->joinPurchaseOrders($tempitems);
@@ -136,7 +140,9 @@ class   AqbController extends \BaseController
                     $stringresponse = $this->joinForDocFetcher($tempitems);
                     break;
                 case 'ten-digit':
-                    $stringresponse=$this->confirmTenDigits($tempitems);
+                    $getResultstoReturn=$this->confirmTenDigits($tempitems);
+                    $stringresponse=$getResultstoReturn['stringresponse'];
+                    $additionalQuery=$getResultstoReturn['additionalQuery'];
                     break;
                 case 'amazonpos':
 
@@ -157,6 +163,7 @@ class   AqbController extends \BaseController
 
 
             $data['response'] = $stringresponse;
+            $data['additionalQuery']=$additionalQuery;
             $data['itemCount'] = count($tempitems);
             $data['uniqueItemCount'] = count(array_unique($tempitems));
 
@@ -166,7 +173,9 @@ class   AqbController extends \BaseController
 
     }
     private function confirmTenDigits($listOfPOs){
-        $stringresponse='';
+      $data['stringresponse']='';
+      $correctedPOs=[];
+
         if(count($listOfPOs)!=0){
 
             foreach($listOfPOs as $po){
@@ -178,9 +187,11 @@ class   AqbController extends \BaseController
                         $zerosToAddToPO.='0';
 
                     }
-                    $stringresponse.=$zerosToAddToPO.$po.'<br>';
+                    $data["stringresponse"].=$zerosToAddToPO.$po.'<br>';
+                    array_push($correctedPOs,$zerosToAddToPO.$po);
                 }else{
-                    $stringresponse.=$po.'<br>';
+                    $data["stringresponse"].=$po.'<br>';
+                    array_push($correctedPOs,$po);
                 }
 
             }
@@ -188,7 +199,8 @@ class   AqbController extends \BaseController
         else{
             return 'Empty list';
         }
-        return $stringresponse;
+        $data['additionalQuery']=$this->joinPurchaseOrders($correctedPOs);
+        return $data;
 
     }
     private function joinPartsInventoryScreen($customersArray)
@@ -382,7 +394,32 @@ class   AqbController extends \BaseController
         return $stringresponse;
 
     }
+    /*
+       * Creates a string such as item,item2,item3
+       * Can also add SHP if $addSHPTest is true
+       */
+    private function joinSpaces($itemArray)
+    {
+        $stringresponse = '';
 
+        $i = 1;
+        $totalitems = count($itemArray);
+        foreach ($itemArray as $item) {
+            if ($i == 1 && $totalitems == 1) {
+                return $stringresponse .= $item;
+
+            } elseif ($i == 1) {
+                $stringresponse .= $item . ' ';
+            } elseif ($i == $totalitems) {
+                $stringresponse .= $item;
+            } else {
+                $stringresponse .= $item . " ";
+            }
+            $i++;
+        }
+        return $stringresponse;
+
+    }
     /*
      * Creates a string such as item,item2,item3
      * Can also add SHP if $addSHPTest is true

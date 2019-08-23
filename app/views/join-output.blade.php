@@ -59,6 +59,20 @@
             @endif
         </div>
     </div>
+    @if(isset($additionalQuery)&&!empty($additionalQuery))
+    <div class="pure-g" style="margin-top:20px;">
+        <div class="pure-u-1">
+            <h3 style="margin-bottom:10px;">Generated Query:</h3>
+
+            <input type="button" onclick="selectElementContents(result2)"
+                   value="Select this to highlight the generated query. Then press Ctrl-C to copy it to the clipboard."/>
+
+                <div class="pure-u-1" style="margin-top:10px;"><p id="result2"
+                                                                  style="word-wrap: break-word;">{{$additionalQuery}}</p></div>
+
+        </div>
+    </div>
+    @endif
 </div>
 </body>
 </html>
