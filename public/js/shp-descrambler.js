@@ -49,7 +49,8 @@ $(document).ready(function () {
         e.preventDefault();
         var text = $("#extract").val();
         var splittext;
-        var numberOnlySelector = /[^0-9]/g;
+        // var numberOnlySelector = /[^0-9]/g;
+         var numberOnlySelector = /(SHP)+\d{7}/g;
         for (var i = 0, len = text.length; i < len; i++) {
 
             if (numberOnlySelector.test(text[i])) {
@@ -60,16 +61,17 @@ $(document).ready(function () {
 
 
         }
-    console.log(text);
+
         splittext = text.split(" ");
+
         var tempArray = [];
-        var selector = /(25)+\d{8}/;
+        var selector = /(SHP)+\d{7}/;
         splittext.forEach(function (item) {
             if ($.trim(item).length > 0) {
 
                 if (selector.test(item)) {
                     //is a valid DO
-                    var tempItem = item.match(/(25)+\d{8}/g);
+                    var tempItem = item.match(/(SHP)+\d{7}/g);
                     //    console.log(tempItem[0]);
                     tempArray.push(tempItem[0]);
 
@@ -98,8 +100,8 @@ $(document).ready(function () {
             var queryStringResult = '';
             $.ajax({
                 type: 'POST',
-                url: 'ajaxJoinOrders',
-                data: {'orders': ajaxArray},
+                url: 'ajaxJoinSHP',
+                data: {'shps': ajaxArray},
                 dataType: 'json',
                 cache: false,
                 beforeSend: function (xhr) {

@@ -1,6 +1,6 @@
 <?php
 
-class KohlsController extends \BaseController
+class QVCController extends \BaseController
 {
 
     function __construct()
@@ -30,10 +30,6 @@ class KohlsController extends \BaseController
 
     }
 
-    public function Getcheckforground()
-    {
-        return View::make('kohls-check-if-ground-input');
-    }
 
     public function Postcheckforground()
     {
@@ -50,7 +46,7 @@ class KohlsController extends \BaseController
 
             $inputArray = $this->prepareArray(Input::get('pos'));
             foreach ($inputArray as $tempItem) {
-                $tempPO = PackingList::where('po', '=', $tempItem)->first();
+                $tempPO = QVCPackingList::where('po', '=', $tempItem)->first();
                 if ($tempPO == null) {
                     array_push($notInDBPOS, $tempItem);
                     //not in db
@@ -62,7 +58,7 @@ class KohlsController extends \BaseController
                 }
 
             }
-            $queryPOString = $this->joinKohlsParsePO($nonGroundPOS);
+            $queryPOString = $this->joinQVCParsePO($nonGroundPOS);
             $data['nonGroundPos'] = $nonGroundPOS;
             $data['notInDBPos'] = $notInDBPOS;
             $data['queryPOString'] = $queryPOString;
@@ -71,12 +67,12 @@ class KohlsController extends \BaseController
             if ((empty($nonGroundPOS) && empty($notInDBPOS))) {
                 $data['response'] = 'All of the provided POs are in the DB and are going Ground.';
             }
-            return View::make('kohls-check-if-ground-output', $data);
+            return View::make('QVC-check-if-ground-output', $data);
 
 
         } else {
 
-            return View::make('kohls-check-if-ground-output')->with(array('response' => '<p style="color:red;">Please provide a list of POs</p>'));
+            return View::make('QVC-check-if-ground-output')->with(array('response' => '<p style="color:red;">Please provide a list of POs</p>'));
 
         }
 
@@ -84,7 +80,7 @@ class KohlsController extends \BaseController
 
     function split_pdf($filePath, $fileName, $individualFileName, $arrayOfPos, $end_directory = false)
     {
-        $new_path = storage_path() . '/Kohlspos';
+        $new_path = storage_path() . '/QVCpos';
 
 
         if (!is_dir($new_path)) {
@@ -98,22 +94,22 @@ class KohlsController extends \BaseController
 //dd($pagecount);
         // Split each page into a new PDF
         for ($i = 1; $i <= $pagecount; $i++) {
-            $tempPackingList = PackingList::where('po', '=', $arrayOfPos[$i - 1])->first();
+            $tempQVCPackingList = QVCPackingList::where('po', '=', $arrayOfPos[$i - 1])->first();
 
-            if ($tempPackingList == null) {
+            if ($tempQVCPackingList == null) {
                 $new_pdf = new FPDI();
                 $new_pdf->AddPage();
                 $new_pdf->setSourceFile($filePath);
-                $newPackingList = new PackingList();
-                $newPackingList->po = trim($arrayOfPos[$i - 1]);
+                $newQVCPackingList = new QVCPackingList();
+                $newQVCPackingList->po = trim($arrayOfPos[$i - 1]);
                 $new_pdf->useTemplate($new_pdf->importPage($i));
 
                 try {
-                    $new_filename = storage_path() . '/Kohlspos/' . $arrayOfPos[$i - 1] . '.pdf';
+                    $new_filename = storage_path() . '/QVCpos/' . $arrayOfPos[$i - 1] . '.pdf';
 
-                    $newPackingList->pathToFile = $new_filename;
+                    $newQVCPackingList->pathToFile = $new_filename;
                     $new_pdf->Output($new_filename, "F");
-                    $newPackingList->save();
+                    $newQVCPackingList->save();
 
                 } catch (Exception $e) {
                     echo 'Caught exception: ', $e->getMessage(), "\n";
@@ -122,10 +118,10 @@ class KohlsController extends \BaseController
         }
     }
 
-    function split_multi_pdf($arrayOfFiles,$ignoreErrors)
+    function split_multi_pdf($arrayOfFiles)
     {
 
-        $new_path = storage_path() . '/Kohlspos';
+        $new_path = storage_path() . '/QVCpos';
 
 
         if (!is_dir($new_path)) {
@@ -135,30 +131,30 @@ class KohlsController extends \BaseController
         }
         foreach ($arrayOfFiles as $file) {
             $tempArrayOfPos = array();
-        //    $infoOfFile=$this->getArrayOfPOs($file);
-            $tempArrayOfPos = $this->getArrayOfPOs($file,$ignoreErrors);
+            //    $infoOfFile=$this->getArrayOfPOs($file);
+            $tempArrayOfPos = $this->getArrayOfPOs($file);
             $pdf = new FPDI();
             $pagecount = $pdf->setSourceFile($file); // How many pages?
-         // $pagecount=$infoOfFile['poCount'];
+            // $pagecount=$infoOfFile['poCount'];
             for ($i = 1; $i <= $pagecount; $i++) {
                 $singleItem = $tempArrayOfPos[$i - 1];
                 //   dd($singleItem);
-                $tempPackingList = PackingList::where('po', '=', $singleItem['PO'])->first();
+                $tempQVCPackingList = QVCPackingList::where('po', '=', $singleItem['PO'])->first();
 
-                if ($tempPackingList == null) {
+                if ($tempQVCPackingList == null) {
                     $new_pdf = new FPDI();
                     $new_pdf->AddPage();
                     $new_pdf->setSourceFile($file);
-                    $newPackingList = new PackingList();
-                    $newPackingList->po = trim($singleItem['PO']);
-                    $newPackingList->shipterms = trim($singleItem['shipterms']);
+                    $newQVCPackingList = new QVCPackingList();
+                    $newQVCPackingList->po = trim($singleItem['PO']);
+                    $newQVCPackingList->shipterms = trim($singleItem['shipterms']);
                     $new_pdf->useTemplate($new_pdf->importPage($i));
 
                     try {
-                        $new_filename = storage_path() . '/Kohlspos/' . $singleItem['PO'] . '.pdf';
-                        $newPackingList->pathToFile = $new_filename;
+                        $new_filename = storage_path() . '/QVCpos/' . $singleItem['PO'] . '.pdf';
+                        $newQVCPackingList->pathToFile = $new_filename;
                         $new_pdf->Output($new_filename, "F");
-                        $newPackingList->save();
+                        $newQVCPackingList->save();
 
                     } catch (Exception $e) {
                         echo 'Caught exception: ', $e->getMessage(), "\n";
@@ -199,43 +195,37 @@ class KohlsController extends \BaseController
 
     }
 
-    function getArrayOfPOs($file,$ignoreErrors)
+    function getArrayOfPOs($file)
     {
         $returnArray = array();
-    //    $returnArray['items']=array();
+        //    $returnArray['items']=array();
         $parser = new \Smalot\PdfParser\Parser();
 
         $pdf = $parser->parseFile($file);
         $pages = $pdf->getPages();
-       // dd($pages);
+        // dd($pages);
 //dd($pages);
-   //     $poCount=0;
+        //     $poCount=0;
 //dd($pages);
 
         foreach ($pages as $page) {
 
             if ($page!=null) {
-            //    $poCount++;
+                //    $poCount++;
                 $text = nl2br($page->getText());
 
                 $tempPDF = explode('<br />', $text);
 
 
-                $getPO = $tempPDF[5];
-                $data['PO'] = trim($getPO);
+                $getPO = $tempPDF[14];
+                $getPO=trim($getPO);
+                $data['PO'] = substr($getPO,-10);
                 $shipTerms = $this->checkShipMethod($text);
                 if($shipTerms==false){
-                    if($ignoreErrors!=true){
-                        dd('PO '.$data['PO'].' has a unrecognized ship method. Please show this to Jason so it can be added');
+                    dd('PO '.$data['PO'].' has a unrecognized ship method. Please show this to Jason so it can be added');
 
-                    }
-                    //normally it breaks
-
-                    $data['shipterms']='Ground';
-                }else{
-                    $data['shipterms'] = $shipTerms;
                 }
-
+                $data['shipterms'] = $shipTerms;
 
 //                if ($isGround) {
 //                    $data['shipterms'] = "Ground";
@@ -248,9 +238,9 @@ class KohlsController extends \BaseController
 
         }
 //dd($returnArray);
-       // $returnArray['poCount']=$poCount;
+        // $returnArray['poCount']=$poCount;
 
-       // dd($returnArray);
+        // dd($returnArray);
         return $returnArray;
 
     }
@@ -270,74 +260,54 @@ class KohlsController extends \BaseController
 //        else {
 //            return false;
 //        }
-        function checkShipMethod($haystack)
-        {
+    function checkShipMethod($haystack)
+    {
+        return 'Ground'; // qvc all ground so no check needed.
+        // if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
+        if (strpos($haystack, 'UPS G ro und') !== false) {
 
-           // if (strpos($haystack, 'Continental US - Standard Ground') !== false) {
-            if (strpos($haystack, 'UPS G ro und') !== false) {
+            return 'Ground';
+        } elseif (strpos($haystack, 'UPS Ground') !== false) {
 
-                return 'Ground';
-            } elseif (strpos($haystack, 'UPS Ground') !== false) {
+            return 'Ground';
+        } elseif (strpos($haystack, 'FedE x 2 D ay') !== false) {
 
-                return 'Ground';
-            }
-            elseif (strpos($haystack, 'FedE x G ro und') !== false) {
+            return 'Ground';
+        }
+        elseif (strpos($haystack, 'FedE x S ta ndard  O vern ig ht') !== false) {
 
-                return 'Ground';
-            }
-            elseif (strpos($haystack, 'FedE x E xpre ss S aver') !== false) {
+            return 'Ground';
+        }
+        elseif (strpos($haystack, 'FedE x H om e D eliv ery') !== false) {
 
-                return 'Ground';
-            }
-            elseif (strpos($haystack, 'FedE x 2 D ay') !== false) {
+            return 'Ground';
+        } elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
 
-                return 'Ground';
-            }
-            elseif (strpos($haystack, 'FedE x S ta ndard  O vern ig ht') !== false) {
+            return 'Ground';
+        }
+        elseif (strpos($haystack, 'Generic  S econd D ay') !== false) {
 
-                return 'Ground';
-            }
-            elseif (strpos($haystack, 'FedE x H om e D eliv ery') !== false) {
+            return '2D';
+        }
+        elseif (strpos($haystack, 'UPS 2nd Day Air') !== false) {
 
-                return 'Ground';
-            }
-            elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
+            return '2D';
+        }
+        elseif (strpos($haystack, 'Overnight') !== false) {
 
-                return 'Ground';
-            }
-            elseif (strpos($haystack, 'Generic  S econd D ay') !== false) {
+            return 'ND';
+        }
+        elseif (strpos($haystack, 'Generic  N ext D ay') !== false) {
 
-                return '2D';
-            }
+            return 'ND';
+        }
+        elseif (strpos($haystack, 'UPS 3 Day Select') !== false) {
 
-
-          elseif (strpos($haystack, 'UPS 2 nd D ay A ir') !== false) {
-
-                return '2D';
-            }
-            elseif (strpos($haystack, 'UPS 2nd Day Air') !== false) {
-
-                return '2D';
-            }
-            elseif (strpos($haystack, 'Overnight') !== false) {
-
-                return 'ND';
-            }
-            elseif (strpos($haystack, 'Generic  N ext D ay') !== false) {
-
-                return 'ND';
-            }
-            elseif (strpos($haystack, 'UPS 3 Day Select') !== false) {
-
-                return '3D';
-            }
-            elseif (strpos($haystack, 'UPS 3  D ay S ele ct') !== false) {
-
-                return '3D';
-            }
-            else {
-                return false;
-            }
+            return '3D';
+        }
+        else {
+            return false;
+        }
 //         $result= strpos($haystack, 'Continental US - Standard Ground') !== false || strpos($haystack, 'UPS Ground') !== false;
 
 // return $result;
@@ -345,7 +315,7 @@ class KohlsController extends \BaseController
 
     public function parseGetPDF()
     {
-        return View::make('parsepdfKohls-importpdf-input');
+        return View::make('parsepdfQVC-importpdf-input');
 
     }
 
@@ -354,19 +324,18 @@ class KohlsController extends \BaseController
 
 //        $validator = Validator::make(Input::all(),
 //            array(
-//                'packinglist' => 'required'
+//                'QVCPackingList' => 'required'
 //            )
 //        );
 //
 //
 //        if (!$validator->fails()) {
-        if(Input::file('packinglist')[0]!=NULL){
+        if(Input::file('QVCPackingList')[0]!=NULL){
             //validation passes
-            $files = Input::file('packinglist');
-            $ignoreErrors=Input::get('check_for_new_ship_methods')=='ignore';
-            $this->split_multi_pdf($files,$ignoreErrors);
-//            $file = Input::file('packinglist');
-//            $name = Input::file('packinglist')->getClientOriginalName();
+            $files = Input::file('QVCPackingList');
+            $this->split_multi_pdf($files);
+//            $file = Input::file('QVCPackingList');
+//            $name = Input::file('QVCPackingList')->getClientOriginalName();
 //            $file_name = pathinfo($name, PATHINFO_FILENAME); // file
 //            $parser = new \Smalot\PdfParser\Parser();
 //
@@ -397,7 +366,7 @@ class KohlsController extends \BaseController
             //  $this->split_pdf($file, $name, $file_name, $arrayOfPos, public_path());
             // How many pages?
             //  $totalOfPos = count($arrayOfPos);
-            //  $queryString = $this->joinKohlsParsePO($arrayOfPos);
+            //  $queryString = $this->joinQVCParsePO($arrayOfPos);
             //    $data['POs'] = $arrayOfPos;
             //   $returnPOString='';
 //            foreach($arrayOfPos as $returnPO){
@@ -406,10 +375,10 @@ class KohlsController extends \BaseController
 //            $data['POs']=$returnPOString;
 //            $data['totalOfPOs'] = $totalOfPos;
 //            $data['queryString'] = $queryString;
-            return View::make('parsepdfKohls-importpdf-output');
+            return View::make('parsepdfQVC-importpdf-output');
         } else {
 //validation fails
-            return View::make('parsepdfKohls-importpdf-input')->with(array('response' => '<p style="color:red;">Please select a packing list pdf to parse.</p>'));
+            return View::make('parsepdfQVC-importpdf-input')->with(array('response' => '<p style="color:red;">Please select a packing list pdf to parse.</p>'));
 
         }
 
@@ -419,7 +388,7 @@ class KohlsController extends \BaseController
     public function retrieveGetPDF()
     {
 
-        return View::make('parsepdfKohls-exportpdf-input');
+        return View::make('parsepdfQVC-exportpdf-input');
     }
 
     public function retrievePostPDF()
@@ -427,7 +396,7 @@ class KohlsController extends \BaseController
 
         $validator = Validator::make(Input::all(),
             array(
-                'packinglist' => 'required'
+                'QVCPackingList' => 'required'
             )
         );
 
@@ -440,47 +409,49 @@ class KohlsController extends \BaseController
             $overnightPos=array();
             $secondDayPos=array();
             $thirdDayPos=array();
-            $groundPackingListPathArray = array();
-            $overnightPackingListPathArray = array();
-            $secondDayPackingListPathArray = array();
-            $thirdDayPackingListPathArray = array();
+            $groundQVCPackingListPathArray = array();
+            $overnightQVCPackingListPathArray = array();
+            $secondDayQVCPackingListPathArray = array();
+            $thirdDayQVCPackingListPathArray = array();
 
-          //  $packingListPOsArray = array();
-            $packingListPathArray = array();
-         //   $packingListPOs = trim(Input::get('packinglist'));
-            Session::flash('packinglist', Input::get('packinglist'));
-          //  $packingListPOsArray = explode(PHP_EOL, $packingListPOs);
-            $packingListPOsArray=$this->prepareArray(trim(Input::get('packinglist')));
-            foreach ($packingListPOsArray as $packingListPO) {
-                $tempPackingList = PackingList::where('po', '=', $packingListPO)->first();
-                if ($tempPackingList == null) {
+            //  $QVCPackingListPOsArray = array();
+            $QVCPackingListPathArray = array();
+            //   $QVCPackingListPOs = trim(Input::get('QVCPackingList'));
+            Session::flash('QVCPackingList', Input::get('QVCPackingList'));
+            //  $QVCPackingListPOsArray = explode(PHP_EOL, $QVCPackingListPOs);
+            $QVCPackingListPOsArray=$this->prepareArray(trim(Input::get('QVCPackingList')));
+            foreach ($QVCPackingListPOsArray as $QVCPackingListPO) {
+                // $tempQVCPackingList = QVCPackingList::where('po', '=', $QVCPackingListPO)->first();
+                //for QVC, have to truncate the first ten digits
+                $tempQVCPackingList = QVCPackingList::where('po', '=', substr($QVCPackingListPO,0,10))->first();
+                if ($tempQVCPackingList == null) {
                     //do not have packing list yet
-                    array_push($notFoundPOs, $packingListPO);
+                    array_push($notFoundPOs, $QVCPackingListPO);
                 } else {
-                  //  array_push($packingListPathArray, $tempPackingList->pathToFile);
-                    // dd($tempPackingList->shipterms=='Ground');
-//                    if ($tempPackingList->shipterms != 'Ground') {
-//                        array_push($nonGroundPOs, $packingListPO);
+                    //  array_push($QVCPackingListPathArray, $tempQVCPackingList->pathToFile);
+                    // dd($tempQVCPackingList->shipterms=='Ground');
+//                    if ($tempQVCPackingList->shipterms != 'Ground') {
+//                        array_push($nonGroundPOs, $QVCPackingListPO);
 //                    }
 
-                        switch ($tempPackingList->shipterms) {
-                            case 'Ground':
-                                array_push($groundPackingListPathArray,$tempPackingList->pathToFile);
-                                array_push($groundPOs,$packingListPO);
-                                break;
-                            case 'ND':
-                                array_push($overnightPackingListPathArray,$tempPackingList->pathToFile);
-                                array_push($overnightPos,$packingListPO);
-                                break;
-                            case '2D':
-                                array_push($secondDayPackingListPathArray,$tempPackingList->pathToFile);
-                                array_push($secondDayPos,$packingListPO);
+                    switch ($tempQVCPackingList->shipterms) {
+                        case 'Ground':
+                            array_push($groundQVCPackingListPathArray,$tempQVCPackingList->pathToFile);
+                            array_push($groundPOs,$QVCPackingListPO);
                             break;
-                            case '3D':
-                                array_push($thirdDayPackingListPathArray,$tempPackingList->pathToFile);
-                                array_push($thirdDayPos,$packingListPO);
-                                break;
-                        }
+                        case 'ND':
+                            array_push($overnightQVCPackingListPathArray,$tempQVCPackingList->pathToFile);
+                            array_push($overnightPos,$QVCPackingListPO);
+                            break;
+                        case '2D':
+                            array_push($secondDayQVCPackingListPathArray,$tempQVCPackingList->pathToFile);
+                            array_push($secondDayPos,$QVCPackingListPO);
+                            break;
+                        case '3D':
+                            array_push($thirdDayQVCPackingListPathArray,$tempQVCPackingList->pathToFile);
+                            array_push($thirdDayPos,$QVCPackingListPO);
+                            break;
+                    }
 
 
 
@@ -492,7 +463,7 @@ class KohlsController extends \BaseController
                 foreach ($notFoundPOs as $notFoundPO) {
                     $notFoundPOsReturnString .= $notFoundPO . '<br>';
                 }
-                return View::make('parsepdfKohls-exportpdf-output')->with(array('response' => '<p style="color:red;">The below POs are missing:</p><br>' . $notFoundPOsReturnString));
+                return View::make('parsepdfQVC-exportpdf-output')->with(array('response' => '<p style="color:red;">The below POs are missing:</p><br>' . $notFoundPOsReturnString));
 
 
             } else {
@@ -500,26 +471,26 @@ class KohlsController extends \BaseController
 //                $overnightPos=array();
 //                $secondDayPos=array();
 //                $thirdDayPos=array();
-//                $groundPackingListPathArray = array();
-//                $overnightPackingListPathArray = array();
-//                $secondDayPackingListPathArray = array();
-//                $thirdDayPackingListPathArray = array();
+//                $groundQVCPackingListPathArray = array();
+//                $overnightQVCPackingListPathArray = array();
+//                $secondDayQVCPackingListPathArray = array();
+//                $thirdDayQVCPackingListPathArray = array();
                 //different types of shipment variables just listed above to remember
                 //return a download file..we have all Packing lists
 
                 //if only type of ship method exists for the request group of POs ... only return the path to the file and not the queries
 
-                if(empty($overnightPackingListPathArray)&&empty($secondDayPackingListPathArray)&&empty($thirdDayPackingListPathArray)){
+                if(empty($overnightQVCPackingListPathArray)&&empty($secondDayQVCPackingListPathArray)&&empty($thirdDayQVCPackingListPathArray)){
                     //beginning of making a group of packing list, need to now make for seperate types
                     $pdf = new PDFMerger;
-                    foreach ($groundPackingListPathArray as $packingListPath) {
-                        $pdf->addPDF($packingListPath);
+                    foreach ($groundQVCPackingListPathArray as $QVCPackingListPath) {
+                        $pdf->addPDF($QVCPackingListPath);
                     }
                     $tempoutputpath = 'output' . '-' . time() . '.pdf';
-                    $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                    $outputpath = public_path() . '/QVCpos/' . $tempoutputpath;
                     $pdf->merge('file', $outputpath);
-                    $outputpath = 'Kohlspos/' . $tempoutputpath;
-                    //end of making a group of packinglist
+                    $outputpath = 'QVCpos/' . $tempoutputpath;
+                    //end of making a group of QVCPackingList
 
                     $data['response'] = $this->createDownloadLink($outputpath,'Click here to download the generated packing lists (All Ground)');
                     // dd($nonGroundPOs);
@@ -527,7 +498,7 @@ class KohlsController extends \BaseController
 
 
 
-                    return View::make('parsepdfKohls-exportpdf-output', $data);
+                    return View::make('parsepdfQVC-exportpdf-output', $data);
 
                 }else{
                     //response to build
@@ -536,15 +507,15 @@ class KohlsController extends \BaseController
                     //other types of ship methods exist so return associated queries with them
 
                     //begin ground
-                    if(empty($groundPackingListPathArray)==false){
+                    if(empty($groundQVCPackingListPathArray)==false){
                         $pdf = new PDFMerger;
-                        foreach ($groundPackingListPathArray as $packingListPath) {
-                            $pdf->addPDF($packingListPath);
+                        foreach ($groundQVCPackingListPathArray as $QVCPackingListPath) {
+                            $pdf->addPDF($QVCPackingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time() .'ground'. '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/QVCpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'QVCpos/' . $tempoutputpath;
                         $response.='Query for Ground POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($groundPOs).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the Ground packing lists');
@@ -557,15 +528,15 @@ class KohlsController extends \BaseController
 
 
                     //begin overnight
-                    if(empty($overnightPackingListPathArray)==false){
+                    if(empty($overnightQVCPackingListPathArray)==false){
                         $pdf = new PDFMerger;
-                        foreach ($overnightPackingListPathArray as $packingListPath) {
-                            $pdf->addPDF($packingListPath);
+                        foreach ($overnightQVCPackingListPathArray as $QVCPackingListPath) {
+                            $pdf->addPDF($QVCPackingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time().'on' . '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/QVCpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'QVCpos/' . $tempoutputpath;
                         $response.='Query for Overnight POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($overnightPos).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the Overnight packing lists');
@@ -576,15 +547,15 @@ class KohlsController extends \BaseController
 
 
                     //begin second day
-                    if(empty($secondDayPackingListPathArray)==false){
+                    if(empty($secondDayQVCPackingListPathArray)==false){
                         $pdf = new PDFMerger;
-                        foreach ($secondDayPackingListPathArray as $packingListPath) {
-                            $pdf->addPDF($packingListPath);
+                        foreach ($secondDayQVCPackingListPathArray as $QVCPackingListPath) {
+                            $pdf->addPDF($QVCPackingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time() .'2nd'. '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/QVCpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'QVCpos/' . $tempoutputpath;
                         $response.='Query for 2nd Day POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($secondDayPos).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the 2nd Day packing lists');
@@ -595,15 +566,15 @@ class KohlsController extends \BaseController
 
 
                     //begin third day
-                    if(empty($thirdDayPackingListPathArray)==false){
+                    if(empty($thirdDayQVCPackingListPathArray)==false){
                         $pdf = new PDFMerger;
-                        foreach ($thirdDayPackingListPathArray as $packingListPath) {
-                            $pdf->addPDF($packingListPath);
+                        foreach ($thirdDayQVCPackingListPathArray as $QVCPackingListPath) {
+                            $pdf->addPDF($QVCPackingListPath);
                         }
                         $tempoutputpath = 'output' . '-' . time() .'3rd'. '.pdf';
-                        $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+                        $outputpath = public_path() . '/QVCpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
-                        $outputpath = 'Kohlspos/' . $tempoutputpath;
+                        $outputpath = 'QVCpos/' . $tempoutputpath;
                         $response.='Query for 3rd Day POs: <br><br>';
                         $response.=$this->joinPurchaseOrders($thirdDayPos).'<br><br>';
                         $response.=$this->createDownloadLink($outputpath,'Click here to download the 3rd Day packing lists');
@@ -612,25 +583,25 @@ class KohlsController extends \BaseController
 
                     //end third day
                     $data['response']=$response;
-                    return View::make('parsepdfKohls-exportpdf-output', $data);
+                    return View::make('parsepdfQVC-exportpdf-output', $data);
                 }
 
 
 
                 //beginning of making a group of packing list, need to now make for seperate types
 //                $pdf = new PDFMerger;
-//                foreach ($packingListPathArray as $packingListPath) {
-//                    $pdf->addPDF($packingListPath);
+//                foreach ($QVCPackingListPathArray as $QVCPackingListPath) {
+//                    $pdf->addPDF($QVCPackingListPath);
 //                }
 //                $tempoutputpath = 'output' . '-' . time() . '.pdf';
-//                $outputpath = public_path() . '/Kohlspos/' . $tempoutputpath;
+//                $outputpath = public_path() . '/QVCpos/' . $tempoutputpath;
 //                $pdf->merge('file', $outputpath);
-//                $outputpath = 'Kohlspos/' . $tempoutputpath;
-//                //end of making a group of packinglist
+//                $outputpath = 'QVCpos/' . $tempoutputpath;
+//                //end of making a group of QVCPackingList
 //
 //                $data['nonGroundPos'] = $nonGroundPOs;
                 // dd($nonGroundPOs);
-            //    $data['outputpath'] = $outputpath;
+                //    $data['outputpath'] = $outputpath;
 
 
 
@@ -643,7 +614,7 @@ class KohlsController extends \BaseController
 
         } else {
 
-            return View::make('parsepdfKohls-exportpdf-input')->with(array('response' => '<p style="color:red;">Please add a list of POs below.</p>'));
+            return View::make('parsepdfQVC-exportpdf-input')->with(array('response' => '<p style="color:red;">Please add a list of POs below.</p>'));
 
         }
     }
@@ -654,7 +625,7 @@ class KohlsController extends \BaseController
 
     function deleteDBForm()
     {
-        return View::make('deleteKohlsDBForm');
+        return View::make('deleteQVCDBForm');
 
     }
 
@@ -663,20 +634,20 @@ class KohlsController extends \BaseController
         $result = Input::get('delete');
         if ($result != 'Y-E-S') {
             $data['response'] = '<span style="color:red">DB reset has failed. Y-E-S was not entered.</span>';
-            return View::make('deleteKohlsDBForm', $data);
+            return View::make('deleteQVCDBForm', $data);
         } else {
 
-            PackingList::truncate();
-            $this->rrmdir(storage_path() . '/Kohlspos');
-            $this->rrmdir(public_path() . '/Kohlspos');
+            QVCPackingList::truncate();
+            $this->rrmdir(storage_path() . '/QVCpos');
+            $this->rrmdir(public_path() . '/QVCpos');
 
-            $data['response'] = '<span style="color:red">All items in the Kohls DB have been cleared.</span>';
-            return View::make('deleteKohlsDBForm', $data);
+            $data['response'] = '<span style="color:red">All items in the QVC DB have been cleared.</span>';
+            return View::make('deleteQVCDBForm', $data);
         }
 
     }
 
-    private function joinKohlsParsePO($ordersArray)
+    private function joinQVCParsePO($ordersArray)
     {
 
         $stringresponse = 'om_f.ship_po in ';

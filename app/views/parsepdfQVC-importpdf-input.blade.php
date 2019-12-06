@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Kohls Packing Slips to DB</title>
+    <title>Add QVC Packing Slips to DB</title>
 
     <link rel="stylesheet" href="<?php echo URL::asset('css/styles.css'); ?>">
     <link rel="stylesheet" href="<?php echo URL::asset('css/magnific-popup.css'); ?>">
@@ -13,14 +13,14 @@
 
 <div style="width:800px;margin:0 auto;">
     @include('main-menu-partial')
-    @include('sub-menu-kohls')
+    @include('sub-menu-QVC')
     <div class="pure-g" style="margin-top:5px;margin-bottom:10px;">
         <div class="pure-u-1">
-            <h1>Add Kohls.com Packing Slips to DB
+            <h1>Add QVC.com Packing Slips to DB
                 <small style="font-size: .4em;color:grey;"> v1.1</small>
                 {{--<small style="margin-left:3px; font-size:.4em;color:grey;">by Jason Rowe</small>--}}
             </h1>
-            Instructions: Upload a Kohls.com packing slip(s) to add POs to the DB. Can add multiple pdfs at one time.
+            Instructions: Upload a QVC.com packing slip(s) to add POs to the DB. Can add multiple pdfs at one time.
         </div>
     </div>
     @if(isset($response))
@@ -32,15 +32,10 @@
             </div>
         </div>
     @endif
-    <form class="pure-form" action="parseKohlsPDF" method="post" enctype="multipart/form-data">
+    <form class="pure-form" action="parseQVCPDF" method="post" enctype="multipart/form-data">
         <div class="pure-g" style="margin:30px;">
 
-            {{ Form::file('packinglist[]', ['class' => 'form-control','multiple'=>true]) }}
-
-        </div>
-        <div class="pure-g" style="margin-top:50px;">
-            <input type="checkbox" name="check_for_new_ship_methods" value="ignore" /> <span style="letter-spacing: initial;"> Check this to ignore new ship method errors. </span>
-            <div style="letter-spacing: initial;margin-top:10px;">Note: If new ship method errors are ignored, the PO with the new method will be treated as Ground</div>
+            {{ Form::file('QVCPackingList[]', ['class' => 'form-control','multiple'=>true]) }}
         </div>
         {{--<script>     function reset(){
                         $('textarea').val('');
@@ -56,15 +51,15 @@
 
         <div class="pure-u-1">
             <button id="errorareatoggle" style="">Having trouble importing packinglists?</button>
-           <div id="errorarea" style="display:none;">
-            <p>If you have an error while trying to import a pdf, the file may be corrupt. You can try going to the below website and converting it to another pdf version.</p>
-            <br>
-            <a href="https://docupub.com/pdfconvert/" target="_blank">Convert PDF</a>
-            <p>Select version 1.3, convert and download and try again to import.</p>
-            <br>
-            <img src="<?php echo URL::asset('images/conversion-example.png') ?>" alt="">
-           </div>
-            
+            <div id="errorarea" style="display:none;">
+                <p>If you have an error while trying to import a pdf, the file may be corrupt. You can try going to the below website and converting it to another pdf version.</p>
+                <br>
+                <a href="https://docupub.com/pdfconvert/" target="_blank">Convert PDF</a>
+                <p>Select version 1.3, convert and download and try again to import.</p>
+                <br>
+                <img src="<?php echo URL::asset('images/conversion-example.png') ?>" alt="">
+            </div>
+
         </div>
     </div>
 
@@ -79,7 +74,7 @@
             //doesn't wait for images, style sheets etc..
             //is called after the DOM has been initialized
 //                    alert("hello");
-           // $('#errorarea').hide();
+            // $('#errorarea').hide();
             $('#errorareatoggle').click(
                 function(e){
                     e.preventDefault();

@@ -90,12 +90,35 @@ Route::post('/retrieveBBBPDF',
 
 //finish BBB
 
+// qvc packing list start
+
+Route::get('/parseQVCPDF',
+    ['as' => 'parseGetQVCPDF', 'uses' => 'QVCController@parseGetPDF']);
+
+Route::post('/parseQVCPDF',
+    ['as' => 'parsePostQVCPDF', 'uses' => 'QVCController@parsePostPDF']);
+
+Route::get('/retrieveQVCPDF',
+    ['as' => 'retrieveGetQVCPDF', 'uses' => 'QVCController@retrieveGetPDF']);
+
+Route::post('/retrieveQVCPDF',
+    ['as' => 'retrievePostQVCPDF', 'uses' => 'QVCController@retrievePostPDF']);
+
+Route::get('deleteQVCDB', ['as' => 'deleteQVCDBForm', 'uses' => 'QVCController@deleteDBForm']);
+Route::post('deleteQVCDB', ['as' => 'deleteQVCDBSubmission', 'uses' => 'QVCController@deleteDBSubmission']);
+
+// qvc packing list end
+
     Route::get('/descrambledo', ['as' => 'descrambledo', function(){
         return View::make('do-descrambler');
     }]);
+Route::get('/descrambleshp', ['as' => 'descrambleshp', function(){
+    return View::make('shp-descrambler');
+}]);
 
 
 Route::post('/ajaxJoinOrders',['as'=>'ajaxJoinOrders','uses'=>'AqbController@ajaxJoinOrders']);
+Route::post('/ajaxJoinSHP',['as'=>'ajaxJoinSHP','uses'=>'AqbController@ajaxJoinSHP']);
 
 
 Route::get('amazoncsv',['as'=>'amazoncsvGET','uses'=>'AmazonController@getPreRouting']);

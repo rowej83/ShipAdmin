@@ -8,12 +8,30 @@
         <li class="pure-menu-item"><a href="<?php echo route('joinHome');?>" class="pure-menu-link">Adv. Query
                 Builder</a></li>
         <li class="pure-menu-item"><span>|</span></li>
-        <li class="pure-menu-item"><a href="<?php echo route('descrambledo');?>" class="pure-menu-link">Extract DOs</a></li>
+
+
+
+        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+            <a href="#" id="menuLink1" class="pure-menu-link">Descramblers</a>
+            <ul class="pure-menu-children">
+                <li class="pure-menu-item"><a href="<?php echo route('descrambledo');?>" class="pure-menu-link">Extract DOs</a></li>
+                <li class="pure-menu-item"><a href="<?php echo route('descrambleshp');?>" class="pure-menu-link">Extract SHPs</a></li>
+
+            </ul>
+        </li>
+
+
+
+
+
+
         <li class="pure-menu-item"><span>|</span></li>
 
 
 
         <li class="pure-menu-item"><a href="<?php echo route('retrieveGetKohlsPDF');?>" class="pure-menu-link">Kohls.com</a>
+        </li><span>|</span>
+        <li class="pure-menu-item"><a href="<?php echo route('retrieveGetQVCPDF');?>" class="pure-menu-link">QVC</a>
         </li><span>|</span>
         <li class="pure-menu-item"><a href="<?php echo route('retrieveGetBBBPDF');?>" class="pure-menu-link">BBB DS</a>
         </li><span>|</span>

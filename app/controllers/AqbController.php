@@ -534,4 +534,12 @@ class   AqbController extends \BaseController
         $data['unique'] = count(array_unique($array));
         return json_encode($data);
     }
+    public function ajaxJoinSHP()
+    {
+        $array = json_decode(Input::get('shps'));
+        $data['resultQueryString'] = $this->joinShipments($array,false);
+        $data['count'] = count($array);
+        $data['unique'] = count(array_unique($array));
+        return json_encode($data);
+    }
 }
