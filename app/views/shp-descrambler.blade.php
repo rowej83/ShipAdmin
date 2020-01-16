@@ -35,7 +35,7 @@
     <form class="pure-form">
         <div class="pure-g" style="margin:30px;">
             <div class="pure-u-1">
-                {{ Form::label('extract', 'Enter text to extract DOs', ['class' => 'control-label']) }}<br><br>
+                {{ Form::label('extract', 'Enter text to extract SHPs', ['class' => 'control-label']) }}<br><br>
                 <textarea class="extract" name="extract" id="extract" cols="80" rows="15"></textarea>
             </div>
         </div>

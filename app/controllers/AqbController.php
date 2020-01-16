@@ -299,6 +299,8 @@ class   AqbController extends \BaseController
 
         $stringresponse = 'om_f.shipment in ';
         $i = 1;
+        $shipmentArray=array_unique($shipmentArray);
+         sort($shipmentArray);
         $totalitems = count($shipmentArray);
         foreach ($shipmentArray as $item) {
 
@@ -329,6 +331,8 @@ class   AqbController extends \BaseController
 
         $stringresponse = 'om_f.ob_oid in ';
         $i = 1;
+        $ordersArray=array_unique($ordersArray);
+        sort($ordersArray);
         $totalitems = count($ordersArray);
         foreach ($ordersArray as $item) {
             if ($i == 1 && $totalitems == 1) {
