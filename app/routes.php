@@ -109,6 +109,25 @@ Route::post('deleteQVCDB', ['as' => 'deleteQVCDBSubmission', 'uses' => 'QVCContr
 
 // qvc packing list end
 
+// SUR packing list start
+
+Route::get('/parseSURPDF',
+    ['as' => 'parseGetSURPDF', 'uses' => 'SURController@parseGetPDF']);
+
+Route::post('/parseSURPDF',
+    ['as' => 'parsePostSURPDF', 'uses' => 'SURController@parsePostPDF']);
+
+Route::get('/retrieveSURPDF',
+    ['as' => 'retrieveGetSURPDF', 'uses' => 'SURController@retrieveGetPDF']);
+
+Route::post('/retrieveSURPDF',
+    ['as' => 'retrievePostSURPDF', 'uses' => 'SURController@retrievePostPDF']);
+
+Route::get('deleteSURDB', ['as' => 'deleteSURDBForm', 'uses' => 'SURController@deleteDBForm']);
+Route::post('deleteSURDB', ['as' => 'deleteSURDBSubmission', 'uses' => 'SURController@deleteDBSubmission']);
+
+// SUR packing list end
+
     Route::get('/descrambledo', ['as' => 'descrambledo', function(){
         return View::make('do-descrambler');
     }]);
@@ -173,8 +192,15 @@ Route::get('testmultipdf', function () {
         if ($page != null) {
             $text=nl2br($page->getText());
             $tempPDF = explode('<br />', $text);
+//            dd(trim(substr($tempPDF[18],46,5))); // sur la ta
+            foreach ($tempPDF as $line){
+                if(str_contains($line,'BEST WAY - STANDARD')){
+                    dd(trim(substr($line,46,5))); // sur la ta
+                    break;
+                }
+            }
             array_push($resultArray,$tempPDF);
-//            dd($tempPDF);
+          //  dd($tempPDF);
 //            if(isset($tempPDF[5])){
 //                $PO=substr($tempPDF[5], -7);
 //                echo $PO.'<br>';
