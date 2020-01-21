@@ -222,7 +222,10 @@ class SURController extends \BaseController
 
                 foreach ($tempPDF as $line){
                     if(str_contains($line,'BEST WAY - STANDARD')){
-                       $thePO=trim(substr($line,46,5)); // sur la ta
+                        $foundLine=explode("-",$line);
+                        $thePO=substr(trim($foundLine[1]),-7);
+
+
                         break;
                     }
                 }

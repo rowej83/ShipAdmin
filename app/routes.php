@@ -193,9 +193,14 @@ Route::get('testmultipdf', function () {
             $text=nl2br($page->getText());
             $tempPDF = explode('<br />', $text);
 //            dd(trim(substr($tempPDF[18],46,5))); // sur la ta
+
+
             foreach ($tempPDF as $line){
                 if(str_contains($line,'BEST WAY - STANDARD')){
-                    dd(trim(substr($line,46,5))); // sur la ta
+                  $foundLine=explode("-",$line);
+                  dd(substr(trim($foundLine[1]),-7));
+
+
                     break;
                 }
             }

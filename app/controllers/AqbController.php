@@ -407,6 +407,7 @@ class   AqbController extends \BaseController
         $stringresponse = '';
 
         $i = 1;
+        $itemArray=array_unique($itemArray);
         $totalitems = count($itemArray);
         foreach ($itemArray as $item) {
             if ($i == 1 && $totalitems == 1) {
@@ -433,6 +434,7 @@ class   AqbController extends \BaseController
         $stringresponse = '';
 
         $i = 1;
+        $itemArray=array_unique($itemArray);
         $totalitems = count($itemArray);
         foreach ($itemArray as $item) {
             if ($i == 1 && $totalitems == 1) {
