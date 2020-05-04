@@ -128,6 +128,27 @@ Route::post('deleteSURDB', ['as' => 'deleteSURDBSubmission', 'uses' => 'SURContr
 
 // SUR packing list end
 
+
+
+// NORD packing list start
+
+Route::get('/parseNORDPDF',
+    ['as' => 'parseGetNORDPDF', 'uses' => 'NORDController@parseGetPDF']);
+
+Route::post('/parseNORDPDF',
+    ['as' => 'parsePostNORDPDF', 'uses' => 'NORDController@parsePostPDF']);
+
+Route::get('/retrieveNORDPDF',
+    ['as' => 'retrieveGetNORDPDF', 'uses' => 'NORDController@retrieveGetPDF']);
+
+Route::post('/retrieveNORDPDF',
+    ['as' => 'retrievePostNORDPDF', 'uses' => 'NORDController@retrievePostPDF']);
+
+Route::get('deleteNORDDB', ['as' => 'deleteNORDDBForm', 'uses' => 'NORDController@deleteDBForm']);
+Route::post('deleteNORDDB', ['as' => 'deleteNORDDBSubmission', 'uses' => 'NORDController@deleteDBSubmission']);
+
+// NORD packing list end
+
     Route::get('/descrambledo', ['as' => 'descrambledo', function(){
         return View::make('do-descrambler');
     }]);
@@ -196,15 +217,27 @@ Route::get('testmultipdf', function () {
          //   dd($tempPDF);
 
 
-            array_push($resultArray,$tempPDF);
-          //  dd($tempPDF);
-//            if(isset($tempPDF[5])){
-//                $PO=substr($tempPDF[5], -7);
-//                echo $PO.'<br>';
-//                array_push($countArray,$PO);
-//
-//            }
+//            array_push($resultArray,$tempPDF);
 
+            $indexOfLine=0;
+            $foundIndex=null;
+            $thePO=null;
+            foreach ($tempPDF as $line){
+               // dd($tempPDF);
+                if(str_contains($line,'PO  N UM BER :')){
+//                        $foundLine=explode("-",$line);
+//                        $thePO=substr(trim($foundLine[1]),-7);
+
+
+                    $thePO=$tempPDF[$indexOfLine+1];
+               //    dd($thePO);
+                    break;
+                }
+                $indexOfLine++;
+            }
+//                $thePO=$tempPDF[$foundIndex];
+            $thePO = str_replace(' ', '', $thePO);
+            dd($thePO);
 
         }
     }

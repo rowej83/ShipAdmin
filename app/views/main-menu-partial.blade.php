@@ -26,6 +26,8 @@
 
                 <li class="pure-menu-item"><a href="<?php echo route('retrieveGetSURPDF');?>" class="pure-menu-link">Surlatable</a>
                 </li>
+                <li class="pure-menu-item"><a href="<?php echo route('retrieveGetNORDPDF');?>" class="pure-menu-link">Nordstrom</a>
+                </li>
             </ul>
         </li>
 
