@@ -219,16 +219,16 @@ class SURController extends \BaseController
 
 //                $getPO = $tempPDF[14];
 //                $getPO=trim($getPO);
-
-                foreach ($tempPDF as $line){
-                    if(str_contains($line,'BEST WAY - STANDARD')){
-                        $foundLine=explode("-",$line);
-                        $thePO=substr(trim($foundLine[1]),-7);
-
-
-                        break;
-                    }
-                }
+  // get PO from doc here
+//                foreach ($tempPDF as $line){
+//                    if(str_contains($line,'BEST WAY - STANDARD')){
+//                        $foundLine=explode("-",$line);
+//                        $thePO=substr(trim($foundLine[1]),-7);
+//
+//
+//                        break;
+//                    }
+//                }
                 $data['PO'] = $thePO;
                 $shipTerms = $this->checkShipMethod($text);
                 if($shipTerms==false){
