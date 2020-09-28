@@ -180,14 +180,24 @@ Route::get('testpdf', function () {
         if ($page != null) {
             $text=nl2br($page->getText());
             $tempPDF = explode('<br />', $text);
+ dd($tempPDF);
+            
+            foreach ($tempPDF as $line){
+                if(str_contains($line,'BEST WAY - STANDARD')){
+                  //  $foundLine=explode("-",$line);
+dd($line);
 
-            dd($tempPDF);
-//            if(isset($tempPDF[5])){
-//                $PO=substr($tempPDF[5], -7);
-//                echo $PO.'<br>';
-//                array_push($countArray,$PO);
-//
-//            }
+                    break;
+                }
+            }
+
+            //dd($tempPDF[4]);
+           if(isset($tempPDF[4])){
+               $PO=substr($tempPDF[4],11,6);
+               dd($PO);
+               array_push($countArray,$PO);
+
+           }
 
 
         }
