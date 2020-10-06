@@ -221,7 +221,7 @@ class SURController extends \BaseController
                 // $getPO=trim($getPO);
 
             
-                        $thePO=substr($tempPDF[4],11,6);
+                        $thePO=substr($tempPDF[4],-12,7);
 
 
           
