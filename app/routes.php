@@ -177,27 +177,30 @@ Route::get('testpdf', function () {
 
     foreach ($pages as $page) {
 
+
         if ($page != null) {
             $text=nl2br($page->getText());
             $tempPDF = explode('<br />', $text);
- dd($tempPDF);
-            
+            var_dump($tempPDF);continue;
+ //dd($tempPDF);
+            dd($tempPDF);
             foreach ($tempPDF as $line){
+
                 if(str_contains($line,'BEST WAY - STANDARD')){
                   //  $foundLine=explode("-",$line);
-dd($line);
+//dd($line);
 
-                    break;
+                    //break;
                 }
             }
 
             //dd($tempPDF[4]);
-           if(isset($tempPDF[4])){
-               $PO=substr($tempPDF[4],11,6);
-               dd($PO);
-               array_push($countArray,$PO);
-
-           }
+//           if(isset($tempPDF[4])){
+//               $PO=substr($tempPDF[4],11,6);
+//               dd($PO);
+//               array_push($countArray,$PO);
+//
+//           }
 
 
         }

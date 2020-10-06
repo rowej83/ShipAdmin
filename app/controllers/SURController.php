@@ -210,7 +210,7 @@ class SURController extends \BaseController
 
         foreach ($pages as $page) {
 
-            if ($page!=null) {
+            if ($page != null) {
                 //    $poCount++;
                 $text = nl2br($page->getText());
 
@@ -219,16 +219,56 @@ class SURController extends \BaseController
 
                 // $getPO = $tempPDF[14];
                 // $getPO=trim($getPO);
+                $index = 0;
+                $type='';
+                foreach ($tempPDF as $line) {
 
-            
-                        $thePO=substr($tempPDF[4],-12,7);
+                    if (str_contains($line, 'BEST WAY - STANDARD')) {
+                        //  $foundLine=explode("-",$line);
+//dd($line);
+                        if (str_contains($line, 'Customer #:')) {
+                            // wrong line
+                        } else {//right line
+                            $type="G";
+                            break;
+
+                        }
+                    }
+
+                    if (str_contains($line, 'EXPRESS 2-DAY')) {
+                        //  $foundLine=explode("-",$line);
+//dd($line);
+                        if (str_contains($line, 'Customer #:')) {
+                            // wrong line
+                        } else {//right line
+                            $type="2nd";
+                            break;
+
+                        }
+
+                    }
+
+                    $index++;
+                }
+                $thePO='';
+                switch($type){
+
+                    case 'G':
+                        $thePO = substr($tempPDF[$index], -12, 7);
+                        break;
+                    case '2nd':
+                        $thePO = substr($tempPDF[$index], -12, 7);
+                        break;
+
+                }
 
 
-          
+
+
                 $data['PO'] = $thePO;
                 $shipTerms = $this->checkShipMethod($text);
-                if($shipTerms==false){
-                    dd('PO '.$data['PO'].' has a unrecognized ship method. Please show this to Jason so it can be added');
+                if ($shipTerms == false) {
+                    dd('PO ' . $data['PO'] . ' has a unrecognized ship method. Please show this to Jason so it can be added');
 
                 }
                 $data['shipterms'] = $shipTerms;
@@ -279,39 +319,31 @@ class SURController extends \BaseController
         } elseif (strpos($haystack, 'FedE x 2 D ay') !== false) {
 
             return 'Ground';
-        }
-        elseif (strpos($haystack, 'FedE x S ta ndard  O vern ig ht') !== false) {
+        } elseif (strpos($haystack, 'FedE x S ta ndard  O vern ig ht') !== false) {
 
             return 'Ground';
-        }
-        elseif (strpos($haystack, 'FedE x H om e D eliv ery') !== false) {
+        } elseif (strpos($haystack, 'FedE x H om e D eliv ery') !== false) {
 
             return 'Ground';
         } elseif (strpos($haystack, 'Alaska/Hawaii & APO/FPO - Standard Ground') !== false) {
 
             return 'Ground';
-        }
-        elseif (strpos($haystack, 'Generic  S econd D ay') !== false) {
+        } elseif (strpos($haystack, 'Generic  S econd D ay') !== false) {
 
             return '2D';
-        }
-        elseif (strpos($haystack, 'UPS 2nd Day Air') !== false) {
+        } elseif (strpos($haystack, 'UPS 2nd Day Air') !== false) {
 
             return '2D';
-        }
-        elseif (strpos($haystack, 'Overnight') !== false) {
+        } elseif (strpos($haystack, 'Overnight') !== false) {
 
             return 'ND';
-        }
-        elseif (strpos($haystack, 'Generic  N ext D ay') !== false) {
+        } elseif (strpos($haystack, 'Generic  N ext D ay') !== false) {
 
             return 'ND';
-        }
-        elseif (strpos($haystack, 'UPS 3 Day Select') !== false) {
+        } elseif (strpos($haystack, 'UPS 3 Day Select') !== false) {
 
             return '3D';
-        }
-        else {
+        } else {
             return false;
         }
 //         $result= strpos($haystack, 'Continental US - Standard Ground') !== false || strpos($haystack, 'UPS Ground') !== false;
@@ -336,7 +368,7 @@ class SURController extends \BaseController
 //
 //
 //        if (!$validator->fails()) {
-        if(Input::file('SURPackingList')[0]!=NULL){
+        if (Input::file('SURPackingList')[0] != NULL) {
             //validation passes
             $files = Input::file('SURPackingList');
             $this->split_multi_pdf($files);
@@ -411,10 +443,10 @@ class SURController extends \BaseController
             include(app_path() . '/includes/PDFMerger.php');
             $notFoundPOs = array();
             $nonGroundPOs = array();
-            $groundPOs=array();
-            $overnightPos=array();
-            $secondDayPos=array();
-            $thirdDayPos=array();
+            $groundPOs = array();
+            $overnightPos = array();
+            $secondDayPos = array();
+            $thirdDayPos = array();
             $groundSURPackingListPathArray = array();
             $overnightSURPackingListPathArray = array();
             $secondDaySURPackingListPathArray = array();
@@ -425,11 +457,11 @@ class SURController extends \BaseController
             //   $SURPackingListPOs = trim(Input::get('SURPackingList'));
             Session::flash('SURPackingList', Input::get('SURPackingList'));
             //  $SURPackingListPOsArray = explode(PHP_EOL, $SURPackingListPOs);
-            $SURPackingListPOsArray=$this->prepareArray(trim(Input::get('SURPackingList')));
+            $SURPackingListPOsArray = $this->prepareArray(trim(Input::get('SURPackingList')));
             foreach ($SURPackingListPOsArray as $SURPackingListPO) {
                 // $tempSURPackingList = SURPackingList::where('po', '=', $SURPackingListPO)->first();
                 //for SUR, have to truncate the first ten digits
-                $tempSURPackingList = SURPackingList::where('po', '=', substr($SURPackingListPO,0,10))->first();
+                $tempSURPackingList = SURPackingList::where('po', '=', substr($SURPackingListPO, 0, 10))->first();
                 if ($tempSURPackingList == null) {
                     //do not have packing list yet
                     array_push($notFoundPOs, $SURPackingListPO);
@@ -442,23 +474,22 @@ class SURController extends \BaseController
 
                     switch ($tempSURPackingList->shipterms) {
                         case 'Ground':
-                            array_push($groundSURPackingListPathArray,$tempSURPackingList->pathToFile);
-                            array_push($groundPOs,$SURPackingListPO);
+                            array_push($groundSURPackingListPathArray, $tempSURPackingList->pathToFile);
+                            array_push($groundPOs, $SURPackingListPO);
                             break;
                         case 'ND':
-                            array_push($overnightSURPackingListPathArray,$tempSURPackingList->pathToFile);
-                            array_push($overnightPos,$SURPackingListPO);
+                            array_push($overnightSURPackingListPathArray, $tempSURPackingList->pathToFile);
+                            array_push($overnightPos, $SURPackingListPO);
                             break;
                         case '2D':
-                            array_push($secondDaySURPackingListPathArray,$tempSURPackingList->pathToFile);
-                            array_push($secondDayPos,$SURPackingListPO);
+                            array_push($secondDaySURPackingListPathArray, $tempSURPackingList->pathToFile);
+                            array_push($secondDayPos, $SURPackingListPO);
                             break;
                         case '3D':
-                            array_push($thirdDaySURPackingListPathArray,$tempSURPackingList->pathToFile);
-                            array_push($thirdDayPos,$SURPackingListPO);
+                            array_push($thirdDaySURPackingListPathArray, $tempSURPackingList->pathToFile);
+                            array_push($thirdDayPos, $SURPackingListPO);
                             break;
                     }
-
 
 
                 }
@@ -486,7 +517,7 @@ class SURController extends \BaseController
 
                 //if only type of ship method exists for the request group of POs ... only return the path to the file and not the queries
 
-                if(empty($overnightSURPackingListPathArray)&&empty($secondDaySURPackingListPathArray)&&empty($thirdDaySURPackingListPathArray)){
+                if (empty($overnightSURPackingListPathArray) && empty($secondDaySURPackingListPathArray) && empty($thirdDaySURPackingListPathArray)) {
                     //beginning of making a group of packing list, need to now make for seperate types
                     $pdf = new PDFMerger;
                     foreach ($groundSURPackingListPathArray as $SURPackingListPath) {
@@ -498,33 +529,32 @@ class SURController extends \BaseController
                     $outputpath = 'SURpos/' . $tempoutputpath;
                     //end of making a group of SURPackingList
 
-                    $data['response'] = $this->createDownloadLink($outputpath,'Click here to download the generated packing lists (All Ground)');
+                    $data['response'] = $this->createDownloadLink($outputpath, 'Click here to download the generated packing lists (All Ground)');
                     // dd($nonGroundPOs);
                     //    $data['outputpath'] = $outputpath;
 
 
-
                     return View::make('parsepdfSUR-exportpdf-output', $data);
 
-                }else{
+                } else {
                     //response to build
-                    $response='';
+                    $response = '';
 
                     //other types of ship methods exist so return associated queries with them
 
                     //begin ground
-                    if(empty($groundSURPackingListPathArray)==false){
+                    if (empty($groundSURPackingListPathArray) == false) {
                         $pdf = new PDFMerger;
                         foreach ($groundSURPackingListPathArray as $SURPackingListPath) {
                             $pdf->addPDF($SURPackingListPath);
                         }
-                        $tempoutputpath = 'output' . '-' . time() .'ground'. '.pdf';
+                        $tempoutputpath = 'output' . '-' . time() . 'ground' . '.pdf';
                         $outputpath = public_path() . '/SURpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
                         $outputpath = 'SURpos/' . $tempoutputpath;
-                        $response.='Query for Ground POs: <br><br>';
-                        $response.=$this->joinPurchaseOrders($groundPOs).'<br><br>';
-                        $response.=$this->createDownloadLink($outputpath,'Click here to download the Ground packing lists');
+                        $response .= 'Query for Ground POs: <br><br>';
+                        $response .= $this->joinPurchaseOrders($groundPOs) . '<br><br>';
+                        $response .= $this->createDownloadLink($outputpath, 'Click here to download the Ground packing lists');
 
 
                     }
@@ -534,18 +564,18 @@ class SURController extends \BaseController
 
 
                     //begin overnight
-                    if(empty($overnightSURPackingListPathArray)==false){
+                    if (empty($overnightSURPackingListPathArray) == false) {
                         $pdf = new PDFMerger;
                         foreach ($overnightSURPackingListPathArray as $SURPackingListPath) {
                             $pdf->addPDF($SURPackingListPath);
                         }
-                        $tempoutputpath = 'output' . '-' . time().'on' . '.pdf';
+                        $tempoutputpath = 'output' . '-' . time() . 'on' . '.pdf';
                         $outputpath = public_path() . '/SURpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
                         $outputpath = 'SURpos/' . $tempoutputpath;
-                        $response.='Query for Overnight POs: <br><br>';
-                        $response.=$this->joinPurchaseOrders($overnightPos).'<br><br>';
-                        $response.=$this->createDownloadLink($outputpath,'Click here to download the Overnight packing lists');
+                        $response .= 'Query for Overnight POs: <br><br>';
+                        $response .= $this->joinPurchaseOrders($overnightPos) . '<br><br>';
+                        $response .= $this->createDownloadLink($outputpath, 'Click here to download the Overnight packing lists');
 
 
                     }
@@ -553,18 +583,18 @@ class SURController extends \BaseController
 
 
                     //begin second day
-                    if(empty($secondDaySURPackingListPathArray)==false){
+                    if (empty($secondDaySURPackingListPathArray) == false) {
                         $pdf = new PDFMerger;
                         foreach ($secondDaySURPackingListPathArray as $SURPackingListPath) {
                             $pdf->addPDF($SURPackingListPath);
                         }
-                        $tempoutputpath = 'output' . '-' . time() .'2nd'. '.pdf';
+                        $tempoutputpath = 'output' . '-' . time() . '2nd' . '.pdf';
                         $outputpath = public_path() . '/SURpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
                         $outputpath = 'SURpos/' . $tempoutputpath;
-                        $response.='Query for 2nd Day POs: <br><br>';
-                        $response.=$this->joinPurchaseOrders($secondDayPos).'<br><br>';
-                        $response.=$this->createDownloadLink($outputpath,'Click here to download the 2nd Day packing lists');
+                        $response .= 'Query for 2nd Day POs: <br><br>';
+                        $response .= $this->joinPurchaseOrders($secondDayPos) . '<br><br>';
+                        $response .= $this->createDownloadLink($outputpath, 'Click here to download the 2nd Day packing lists');
 
                     }
 
@@ -572,26 +602,25 @@ class SURController extends \BaseController
 
 
                     //begin third day
-                    if(empty($thirdDaySURPackingListPathArray)==false){
+                    if (empty($thirdDaySURPackingListPathArray) == false) {
                         $pdf = new PDFMerger;
                         foreach ($thirdDaySURPackingListPathArray as $SURPackingListPath) {
                             $pdf->addPDF($SURPackingListPath);
                         }
-                        $tempoutputpath = 'output' . '-' . time() .'3rd'. '.pdf';
+                        $tempoutputpath = 'output' . '-' . time() . '3rd' . '.pdf';
                         $outputpath = public_path() . '/SURpos/' . $tempoutputpath;
                         $pdf->merge('file', $outputpath);
                         $outputpath = 'SURpos/' . $tempoutputpath;
-                        $response.='Query for 3rd Day POs: <br><br>';
-                        $response.=$this->joinPurchaseOrders($thirdDayPos).'<br><br>';
-                        $response.=$this->createDownloadLink($outputpath,'Click here to download the 3rd Day packing lists');
+                        $response .= 'Query for 3rd Day POs: <br><br>';
+                        $response .= $this->joinPurchaseOrders($thirdDayPos) . '<br><br>';
+                        $response .= $this->createDownloadLink($outputpath, 'Click here to download the 3rd Day packing lists');
 
                     }
 
                     //end third day
-                    $data['response']=$response;
+                    $data['response'] = $response;
                     return View::make('parsepdfSUR-exportpdf-output', $data);
                 }
-
 
 
                 //beginning of making a group of packing list, need to now make for seperate types
@@ -610,10 +639,6 @@ class SURController extends \BaseController
                 //    $data['outputpath'] = $outputpath;
 
 
-
-
-
-
 // REPLACE 'file' WITH 'browser', 'download', 'string', or 'file' for output options
 
             }
@@ -625,8 +650,9 @@ class SURController extends \BaseController
         }
     }
 
-    function createDownloadLink($path,$message){
-        return '<a href="'.$path.'" target="_blank">'.$message.'</a><br><br><hr>';
+    function createDownloadLink($path, $message)
+    {
+        return '<a href="' . $path . '" target="_blank">' . $message . '</a><br><br><hr>';
     }
 
     function deleteDBForm()
